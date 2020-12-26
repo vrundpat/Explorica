@@ -12,7 +12,8 @@ public class DisplayManager {
     public static void createDisplay() {
 
         //  New context attributes
-        ContextAttribs attribs = new ContextAttribs(3,2);
+        ContextAttribs attribs = new ContextAttribs(3, 2).withForwardCompatible(true).withProfileCore(true);
+
         attribs.withForwardCompatible(true); // Allow forward propagation
         attribs.withProfileCore(true);  // Allow use of the Profile Core
 
