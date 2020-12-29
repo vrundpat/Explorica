@@ -4,6 +4,7 @@ import RenderEngine.DisplayManager;
 import RenderEngine.Loader;
 import RenderEngine.RawModel;
 import RenderEngine.Renderer;
+import Shaders.StaticShader;
 import org.lwjgl.opengl.Display;
 
 public class MainLoop {
@@ -16,16 +17,14 @@ public class MainLoop {
         // Instantiate a loader and a renderer
         Loader loader = new Loader();
         Renderer renderer = new Renderer();
+        StaticShader shader = new StaticShader();
 
         // Simple Rectangle
         float[] vertices = {
                 -0.5f, 0.5f, 0f,
                 -0.5f, -0.5f, 0f,
                 0.5f, -0.5f, 0,
-
-                0.5f, -0.5f, 0,
-                0.5f, 0.5f, 0,
-                -0.5f, 0.5f, 0,
+                0.5f, 0.5f, 0
         };
 
         // Indices to use to draw the rectangle
@@ -44,13 +43,16 @@ public class MainLoop {
             //  2. Update Game Entities
             //  3. Render updated entities
 
+            shader.start(); // Start the shader before rendering
             renderer.prepare(); // Must be called on every frame; Resets/Clears the game window
             renderer.render(model); // Render the hardcoded rectangle
+            shader.start(); // Stop the shader after rendering
 
             // Step 2
             DisplayManager.updateDisplay();
         }
 
+        shader.cleanUp();
         loader.cleanUp();
 
         // When the game loop terminates, we want to do any clean up and close the window

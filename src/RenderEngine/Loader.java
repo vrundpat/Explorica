@@ -18,24 +18,24 @@ public class Loader {
 
 
     public RawModel loadToVAO(float[] positions, int[] indices) {
-        int vaoId = createVAO(); // Create a VAO
+        int vaoID = createVAO(); // Create a VAO
         bindIndicesBuffer(indices); // Bind the indices buffer to tis VAO
         storeDataInAttributeList(0, positions); // Store the vertex data into the VAO
         unbindVAO(); // Unbind VAO after creation
-        return new RawModel(vaoId, indices.length); // Return its raw model
+        return new RawModel(vaoID, indices.length); // Return its raw model
     }
 
     private int createVAO() {
-        int vaoId = GL30.glGenVertexArrays(); // Generate a new VAO; glGenVertexArray() returns its id
-        VAOS.add(vaoId); // Store this as an initialized VAO into our tracker list
-        GL30.glBindVertexArray(vaoId); // Bind the VAO
-        return vaoId; // return the id of the VAO
+        int vaoID = GL30.glGenVertexArrays(); // Generate a new VAO; glGenVertexArray() returns its id
+        VAOS.add(vaoID); // Store this as an initialized VAO into our tracker list
+        GL30.glBindVertexArray(vaoID); // Bind the VAO
+        return vaoID; // return the id of the VAO
     }
 
     private void storeDataInAttributeList(int attributeNumber, float[] positions) {
-        int vboId = GL15.glGenBuffers(); // Generate a new buffer to store into the VAO
-        VBOS.add(vboId); // Store the Vbo id in our tracker list of initialized VBOs
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId); // Bind the VBO buffer
+        int vboID = GL15.glGenBuffers(); // Generate a new buffer to store into the VAO
+        VBOS.add(vboID); // Store the Vbo id in our tracker list of initialized VBOs
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID); // Bind the VBO buffer
 
         // Covert the float array data into a float buffer
         FloatBuffer convertedData = storeDataInFloatBuffer(positions);
@@ -55,9 +55,9 @@ public class Loader {
     }
 
     private void bindIndicesBuffer(int[] indices) {
-        int vboId = GL15.glGenBuffers(); // Generate a new VBO buffer
-        VBOS.add(vboId); // Store for clean up when terminating
-        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboId); // Bind the buffer
+        int vboID = GL15.glGenBuffers(); // Generate a new VBO buffer
+        VBOS.add(vboID); // Store for clean up when terminating
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboID); // Bind the buffer
         IntBuffer convertedData = storeDataInIntBuffer(indices); // Convert int[] to IntBuffer and store the data
         GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, convertedData, GL15.GL_STATIC_DRAW); // Finish the VBO generation
     }
@@ -76,13 +76,13 @@ public class Loader {
 
     public void cleanUp() {
         // Clear all VAOs
-        for(int vaoId: VAOS) {
-            GL30.glDeleteVertexArrays(vaoId);
+        for(int vaoID: VAOS) {
+            GL30.glDeleteVertexArrays(vaoID);
         }
 
         // Clear all VAOs
-        for(int vboId: VBOS) {
-            GL15.glDeleteBuffers(vboId);
+        for(int vboID: VBOS) {
+            GL15.glDeleteBuffers(vboID);
         }
     }
 }
