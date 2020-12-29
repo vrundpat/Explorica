@@ -7,10 +7,8 @@ import org.lwjgl.opengl.GL30;
 public class Renderer {
 
     public void prepare() {
-        // Clear the window with a simple red color
-        GL11.glClearColor(1, 0, 0, 1);
-
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT); // Clear the screen of previous RGBA residues
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT); // Clear the screen from the previous frame
+        GL11.glClearColor(1, 0, 0, 1); // Fill the window with a simple red color
     }
 
     public void render(RawModel model) {
@@ -19,7 +17,7 @@ public class Renderer {
         GL20.glEnableVertexAttribArray(0); // Enable the current VBO
 
         // Draw the object using triangles starting from the first to the last triangle in the mesh
-        GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, model.getVertexCount());
+        GL11.glDrawElements(GL11.GL_TRIANGLES, model.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 
         GL20.glDisableVertexAttribArray(0); // Disable the VBO after it's rendered
         GL30.glBindVertexArray(0); // Unbind the VBO

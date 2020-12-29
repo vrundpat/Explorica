@@ -1,4 +1,4 @@
-package Engine;
+package GameEngine;
 
 import RenderEngine.DisplayManager;
 import RenderEngine.Loader;
@@ -28,7 +28,13 @@ public class MainLoop {
                 -0.5f, 0.5f, 0,
         };
 
-        RawModel model = loader.loadToVAO(vertices);
+        // Indices to use to draw the rectangle
+        int[] indices = {
+                0, 1, 3,
+                3, 1, 2
+        };
+
+        RawModel model = loader.loadToVAO(vertices, indices);
 
         // Loop until the 'X' is clicked on the game window
         while(!Display.isCloseRequested()) {
