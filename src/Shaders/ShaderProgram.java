@@ -1,17 +1,24 @@
 package Shaders;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 
 public abstract class ShaderProgram {
 
     private int programID;
     private int vertexShaderID;
     private int fragmentShaderID;
+
+    // 4 by 4 transformation matrix
+    private static FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
     public ShaderProgram(String vertexFilePath, String fragmentFilePath) {
         // Load the vertex & program shaders
@@ -27,6 +34,15 @@ public abstract class ShaderProgram {
 
         GL20.glLinkProgram(programID);
         GL20.glValidateProgram(programID);
+
+        // Get the locations of all uniform variables in the shader code
+        getAllUniformLocations();
+    }
+
+    protected abstract void getAllUniformLocations();
+
+    protected int getUniformLocation(String uniformName) {
+        return GL20.glGetUniformLocation(programID, uniformName);
     }
 
     public void start() {
@@ -54,6 +70,31 @@ public abstract class ShaderProgram {
         // @param attribute: Index into the VAO
         // @param variableName: variable name in the shader text file
         GL20.glBindAttribLocation(programID, attribute, variableName);
+    }
+
+    protected void loadFloat(int location, float value) {
+        GL20.glUniform1f(location, value); // Load a uniform float variable
+    }
+
+    protected void loadVector(int location, Vector3f vector) {
+        // Load a uniform vector variable
+        GL20.glUniform3f(location, vector.x, vector.y, vector.z);
+    }
+
+    protected void loadBoolean(int location, boolean value) {
+        float toLoad = 0;
+        if(value) {
+            toLoad = 1;
+        }
+        GL20.glUniform1f(location, toLoad); // Load a uniform boolean variable
+    }
+
+    protected void loadMatrix(int location, Matrix4f matrix) {
+        // Store the matrixBuffer into this Matrix4f matrix, flip it so it can be read
+        matrix.store(matrixBuffer);
+        matrixBuffer.flip();
+        // Load a uniform Matrix4f variable
+        GL20.glUniformMatrix4(location, false, matrixBuffer);
     }
 
     // Each shader will then bind its attributes (variable names in the text file) to
