@@ -23,6 +23,8 @@ public abstract class ShaderProgram {
         GL20.glAttachShader(programID, vertexShaderID);
         GL20.glAttachShader(programID, fragmentShaderID);
 
+        bindAttributes(); // Bind all attributes before linking and validating the shader
+
         GL20.glLinkProgram(programID);
         GL20.glValidateProgram(programID);
     }

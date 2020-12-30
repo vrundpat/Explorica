@@ -1,10 +1,12 @@
 package GameEngine;
 
+import Models.TexturedModel;
 import RenderEngine.DisplayManager;
 import RenderEngine.Loader;
-import RenderEngine.RawModel;
+import Models.RawModel;
 import RenderEngine.Renderer;
 import Shaders.StaticShader;
+import Textures.ModelTexture;
 import org.lwjgl.opengl.Display;
 
 public class MainLoop {
@@ -33,7 +35,17 @@ public class MainLoop {
                 3, 1, 2
         };
 
-        RawModel model = loader.loadToVAO(vertices, indices);
+        // Texture coordinates
+        float[] textureCoords = {
+                0,0,
+                0,1,
+                1,1,
+                1,0
+        };
+
+        RawModel model = loader.loadToVAO(vertices, textureCoords, indices);
+        ModelTexture texture = new ModelTexture(loader.loadTexture("image"));
+        TexturedModel texturedModel = new TexturedModel(model, texture);
 
         // Loop until the 'X' is clicked on the game window
         while(!Display.isCloseRequested()) {
@@ -43,9 +55,9 @@ public class MainLoop {
             //  2. Update Game Entities
             //  3. Render updated entities
 
-            shader.start(); // Start the shader before rendering
             renderer.prepare(); // Must be called on every frame; Resets/Clears the game window
-            renderer.render(model); // Render the hardcoded rectangle
+            shader.start(); // Start the shader before rendering
+            renderer.render(texturedModel); // Render the hardcoded rectangle
             shader.start(); // Stop the shader after rendering
 
             // Step 2
