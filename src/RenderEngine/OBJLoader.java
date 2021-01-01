@@ -25,10 +25,9 @@ import java.util.List;
 
     The f (Face) is the most crucial piece of information in the file and requires a rather long process of parsing
     in order to do correctly. The Face information is followed by a series of numbers which are terminated by ASCII
-    forward slash characters. Each letter in that sequence represents a vertex in the vertex information. As
-    the models being used are made of triangles, these numbers in the sequence are the indices into an array of
-    vertices and the 3 as a triplet represent a triangle. Each set of numbers in that sequence represents a
-    triangle in the model.
+    forward slash characters. Each letter in that sequence represents a vertex in the vertex information.
+    Each set of numbers in that sequence represents a triangle in the model. The information in the form of:
+    Vertex Index /Texture Index / Normal Index.
 
     Below is a lot of tedious and rather inefficient way of parsing an OBJ File, but as it only needs to be loaded
     once during the instantiation of the game, it has no impact on the performance.
