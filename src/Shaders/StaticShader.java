@@ -15,6 +15,8 @@ public class StaticShader extends ShaderProgram {
     private int location_viewMatrix; // Location of tbe view matrix variable in the shader code
     private int location_lightPosition; // Location of the light position in the shader code
     private int location_lightColour; // Location of the light colour in the shader code
+    private int location_shineDamper; // Location of shine damper
+    private int location_reflectivity; // Location of reflectivity
 
 
     public StaticShader() {
@@ -40,6 +42,8 @@ public class StaticShader extends ShaderProgram {
         // Loading the necessities for the lighting
         location_lightPosition = super.getUniformLocation("lightPosition");
         location_lightColour = super.getUniformLocation("lightColour");
+        location_shineDamper = super.getUniformLocation("shineDamper");
+        location_reflectivity = super.getUniformLocation("reflectivity");
     }
 
     // Load transformation matrix in the shader code
@@ -62,5 +66,11 @@ public class StaticShader extends ShaderProgram {
     public void loadLight(Light light) {
         super.loadVector(location_lightPosition, light.getPosition());
         super.loadVector(location_lightColour, light.getColour());
+    }
+
+    // Load the damper and reflectivity variables in the shader code
+    public void loadShineVariables(float damper, float reflectivity) {
+        super.loadFloat(location_shineDamper, damper);
+        super.loadFloat(location_reflectivity, reflectivity);
     }
 }

@@ -4,6 +4,7 @@ import Entities.Entity;
 import Models.RawModel;
 import Models.TexturedModel;
 import Shaders.StaticShader;
+import Textures.ModelTexture;
 import Tools.Maths;
 import org.lwjgl.opengl.*;
 import org.lwjgl.util.vector.Matrix4f;
@@ -46,6 +47,10 @@ public class Renderer {
         // Create a transformation matrix for this entity
         Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(), entity.getRotX(), entity.getRotY(), entity.getRotZ(), entity.getScale());
         shader.loadTransformationMatrix(transformationMatrix); // Load the matrix into the shader
+
+        // Load the damper and reflectivity variables into the shader code from the texture
+        ModelTexture texture = texturedModel.getTexture();
+        shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
 
         // Activate and bind the texture
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
