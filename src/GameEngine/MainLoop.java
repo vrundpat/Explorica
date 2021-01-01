@@ -2,6 +2,7 @@ package GameEngine;
 
 import Entities.Camera;
 import Entities.Entity;
+import Entities.Light;
 import Models.TexturedModel;
 import RenderEngine.DisplayManager;
 import RenderEngine.Loader;
@@ -25,13 +26,11 @@ public class MainLoop {
         StaticShader shader = new StaticShader();
         Renderer renderer = new Renderer(shader);
 
-
-
-
-        RawModel model = OBJLoader.loadObjModel("stall", loader);
+        RawModel model = OBJLoader.loadObjModel("dragon", loader);
         ModelTexture texture = new ModelTexture(loader.loadTexture("stallTexture"));
         TexturedModel staticModel = new TexturedModel(model, texture);
         Entity entity = new Entity(staticModel, new Vector3f(0, -5, -20), 0, 0, 0, 1);
+        Light light = new Light(new Vector3f(-20, 10, -20), new Vector3f(1, 1, 1));
         Camera camera = new Camera();
 
         // Loop until the 'X' is clicked on the game window
@@ -47,7 +46,8 @@ public class MainLoop {
 
             renderer.prepare(); // Must be called on every frame; Resets/Clears the game window
             shader.start(); // Start the shader before rendering
-            shader.loadViewMatrix(camera);
+            shader.loadLight(light); // Set the light's position and colour into the correct variables in the shader code
+            shader.loadViewMatrix(camera); // Set the viewMatrix variable in the shader code to the updated view matrix
             renderer.render(entity, shader); // Render the hardcoded rectangle
             shader.stop(); // Stop the shader after rendering
 

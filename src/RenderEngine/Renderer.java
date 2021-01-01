@@ -37,13 +37,17 @@ public class Renderer {
         GL30.glBindVertexArray(model.getVaoId());
         GL20.glEnableVertexAttribArray(0); // Enable the vertices VBO
 
-        // Enable the texture VBO & activate and bind the texture
+        // Enable the texture VBO
         GL20.glEnableVertexAttribArray(1);
+
+        // Enable the normals VBO
+        GL20.glEnableVertexAttribArray(2);
 
         // Create a transformation matrix for this entity
         Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(), entity.getRotX(), entity.getRotY(), entity.getRotZ(), entity.getScale());
         shader.loadTransformationMatrix(transformationMatrix); // Load the matrix into the shader
 
+        // Activate and bind the texture
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturedModel.getTexture().getTextureID());
 
@@ -52,6 +56,7 @@ public class Renderer {
 
         GL20.glDisableVertexAttribArray(0); // Disable the vertices VBO after it's rendered
         GL20.glDisableVertexAttribArray(1); // Disable the texture VBO after it's rendered
+        GL20.glDisableVertexAttribArray(2); // Disable the normals VBO after it's rendered
 
         GL30.glBindVertexArray(0); // Unbind the vertices VBO
     }

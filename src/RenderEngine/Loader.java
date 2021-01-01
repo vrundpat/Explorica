@@ -23,11 +23,12 @@ public class Loader {
     private List<Integer> TEXTURES = new ArrayList<Integer>();
 
 
-    public RawModel loadToVAO(float[] positions, float[] textureCoords, int[] indices) {
+    public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, int[] indices) {
         int vaoID = createVAO(); // Create a VAO
         bindIndicesBuffer(indices); // Bind the indices buffer to tis VAO
         storeDataInAttributeList(0, 3, positions); // Store the vertex data into the VAO
         storeDataInAttributeList(1, 2, textureCoords); // Store the texture data into the VAO
+        storeDataInAttributeList(2, 3, normals); // Store the normal data into the VAO
 
         unbindVAO(); // Unbind VAO after creation
         return new RawModel(vaoID, indices.length); // Return its raw model

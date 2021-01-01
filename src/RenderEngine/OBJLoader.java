@@ -151,7 +151,7 @@ public class OBJLoader {
         }
 
         // Now use the data from the OBJ File to load the model into a VAO for rendering
-        return loader.loadToVAO(verticesArray, texturesArray, indicesArray);
+        return loader.loadToVAO(verticesArray, texturesArray, normalsArray, indicesArray);
     }
 
 
