@@ -27,7 +27,7 @@ public class Renderer {
     public void prepare() {
         GL11.glEnable(GL11.GL_DEPTH_TEST); // Allow OpenGL to monitor overlapping vertices and render accordingly
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT); // Clear the screen from the previous frame & allow depth buffer testing
-        GL11.glClearColor(1, 0, 0, 1); // Fill the window with a simple red color
+        GL11.glClearColor(1, 1, 1, 1); // Fill the window with a simple red color
     }
 
     public void render(Entity entity, StaticShader shader) {
