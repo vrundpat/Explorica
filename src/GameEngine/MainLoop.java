@@ -4,15 +4,14 @@ import Entities.Camera;
 import Entities.Entity;
 import Entities.Light;
 import Models.TexturedModel;
-import RenderEngine.DisplayManager;
-import RenderEngine.Loader;
+import RenderEngine.*;
 import Models.RawModel;
-import RenderEngine.OBJLoader;
-import RenderEngine.Renderer;
-import Shaders.StaticShader;
 import Textures.ModelTexture;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainLoop {
     public static void main(String[] args) {
@@ -21,21 +20,25 @@ public class MainLoop {
         DisplayManager.createDisplay();
 
 
-        // Instantiate a loader and a renderer
+        // Instantiate a loader
         Loader loader = new Loader();
-        StaticShader shader = new StaticShader();
-        Renderer renderer = new Renderer(shader);
 
         RawModel model = OBJLoader.loadObjModel("dragon", loader);
 
-        TexturedModel staticModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("stallTexture")));
+        TexturedModel staticModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("blue")));
         ModelTexture texture = staticModel.getTexture();
         texture.setShineDamper(10);
         texture.setReflectivity(1);
 
-        Entity entity = new Entity(staticModel, new Vector3f(0, -5, -20), 0, 0, 0, 1);
+        Entity entity = new Entity(staticModel, new Vector3f(0, -4, -20), 0, 0, 0, 1);
         Light light = new Light(new Vector3f(200, 200, 100), new Vector3f(1, 1, 1));
         Camera camera = new Camera();
+
+
+        MainRenderer renderer = new MainRenderer();
+
+        List<Entity> entities = new ArrayList<>();
+        entities.add(entity);
 
         // Loop until the 'X' is clicked on the game window
         while(!Display.isCloseRequested()) {
@@ -48,18 +51,17 @@ public class MainLoop {
             entity.increaseRotation(0, 1, 0);
             camera.move();
 
-            renderer.prepare(); // Must be called on every frame; Resets/Clears the game window
-            shader.start(); // Start the shader before rendering
-            shader.loadLight(light); // Set the light's position and colour into the correct variables in the shader code
-            shader.loadViewMatrix(camera); // Set the viewMatrix variable in the shader code to the updated view matrix
-            renderer.render(entity, shader); // Render the hardcoded rectangle
-            shader.stop(); // Stop the shader after rendering
+            for(Entity object : entities) {
+                renderer.processEntity(object);
+            }
+
+            renderer.render(light, camera);
 
             // Step 2
             DisplayManager.updateDisplay();
         }
 
-        shader.cleanUp();
+        renderer.cleanUp();
         loader.cleanUp();
 
         // When the game loop terminates, we want to do any clean up and close the window

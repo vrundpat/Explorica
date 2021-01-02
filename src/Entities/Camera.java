@@ -11,21 +11,23 @@ public class Camera {
     private float yaw; // Height above ground
     private float roll; // Undefined term for future use
 
+    private static final float CAMERA_SPEED = 0.1f;
+
     public Camera() { }
 
     // Based on given keyboard inputs, move the camera
     public void move() {
         if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
-            position.z -= 0.02f;
+            position.z -= CAMERA_SPEED;
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
-            position.x -= 0.02f;
+            position.x -= CAMERA_SPEED;
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_S)) {
-            position.z += 0.02f;
+            position.z += CAMERA_SPEED;
         }
         if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
-            position.x += 0.02f;
+            position.x += CAMERA_SPEED;
         }
     }
 
