@@ -19,17 +19,18 @@ public class MainRenderer {
     private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
 
     public void render(Light light, Camera camera) {
-        renderer.prepare();
-        shader.start();
-        shader.loadLight(light);
-        shader.loadViewMatrix(camera);
+        renderer.prepare(); // Prepare renderer (clear window & add depth testing)
+        shader.start(); // Start shader program
+        shader.loadLight(light); // Load light variables into the shader code
+        shader.loadViewMatrix(camera); // Load view matrix based on the position of the camera
 
-        renderer.render(entities);
+        renderer.render(entities); // Render all entities
 
-        shader.stop();
-        entities.clear();
+        shader.stop(); // Stop the shader program
+        entities.clear(); // Clear the list of all entities
     }
 
+    /* This method will add a given entity to its corresponding list if it exists or create a new list if it doesn't */
     public void processEntity(Entity entity) {
         TexturedModel entityModel = entity.getModel();
         List<Entity> batch = entities.get(entityModel);
@@ -44,6 +45,7 @@ public class MainRenderer {
         }
     }
 
+    // Clean up the shader program
     public void cleanUp() {
         shader.cleanUp();
     }
