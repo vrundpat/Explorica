@@ -5,6 +5,9 @@ import Entities.Entity;
 import Entities.Light;
 import Models.TexturedModel;
 import Shaders.StaticShader;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,13 +16,30 @@ import java.util.Map;
 
 public class MainRenderer {
 
+    // For the projection matrix
+    private static final float FOV = 70;
+    private static final float NEAR_PLANE = 0.1f;
+    private static final float FAR_PLANE = 1000;
+
+    private Matrix4f projectionMatrix;
+
     private StaticShader shader = new StaticShader();
-    private Renderer renderer = new Renderer(shader);
+    private EntityRenderer renderer;
 
     private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
 
+    public MainRenderer() {
+
+        // Enabling cull facing on the Back Face prevents rendering of faces on a model that are not in view
+        GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glCullFace(GL11.GL_BACK);
+
+        createProjectionMatrix();
+        renderer = new EntityRenderer(shader, projectionMatrix);
+    }
+
     public void render(Light light, Camera camera) {
-        renderer.prepare(); // Prepare renderer (clear window & add depth testing)
+        prepare(); // Prepare renderer (clear window & add depth testing)
         shader.start(); // Start shader program
         shader.loadLight(light); // Load light variables into the shader code
         shader.loadViewMatrix(camera); // Load view matrix based on the position of the camera
@@ -48,5 +68,28 @@ public class MainRenderer {
     // Clean up the shader program
     public void cleanUp() {
         shader.cleanUp();
+    }
+
+    // Prepare for rendering
+    public void prepare() {
+        GL11.glEnable(GL11.GL_DEPTH_TEST); // Allow OpenGL to monitor overlapping vertices and render accordingly
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT); // Clear the screen from the previous frame & allow depth buffer testing
+        GL11.glClearColor(1, 1, 1, 1); // Fill the window with a simple red color
+    }
+
+    /* Project math converted to code using an online reference, forgot to copy link so now I don't wanna go looking for it...*/
+    private void createProjectionMatrix() {
+        float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
+        float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
+        float x_scale = y_scale / aspectRatio;
+        float frustum_length = FAR_PLANE - NEAR_PLANE;
+
+        projectionMatrix = new Matrix4f();
+        projectionMatrix.m00 = x_scale;
+        projectionMatrix.m11 = y_scale;
+        projectionMatrix.m22 = -((FAR_PLANE + NEAR_PLANE) / frustum_length);
+        projectionMatrix.m23 = -1;
+        projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);
+        projectionMatrix.m33 = 0;
     }
 }
