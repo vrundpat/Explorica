@@ -5,6 +5,8 @@ import Entities.Entity;
 import Entities.Light;
 import Models.TexturedModel;
 import Shaders.StaticShader;
+import Shaders.TerrainShader;
+import Terrains.Terrain;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
@@ -26,7 +28,11 @@ public class MainRenderer {
     private StaticShader shader = new StaticShader();
     private EntityRenderer renderer;
 
+    private TerrainRenderer terrainRenderer;
+    private TerrainShader terrainShader = new TerrainShader();
+
     private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
+    private List<Terrain> terrains = new ArrayList<>();
 
     public MainRenderer() {
 
@@ -36,6 +42,11 @@ public class MainRenderer {
 
         createProjectionMatrix();
         renderer = new EntityRenderer(shader, projectionMatrix);
+        terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+    }
+
+    public void processTerrain(Terrain terrain) {
+        terrains.add(terrain);
     }
 
     public void render(Light light, Camera camera) {
@@ -45,9 +56,17 @@ public class MainRenderer {
         shader.loadViewMatrix(camera); // Load view matrix based on the position of the camera
 
         renderer.render(entities); // Render all entities
-
         shader.stop(); // Stop the shader program
+
+        // Render the terrains
+        terrainShader.start();
+        terrainShader.loadLight(light);
+        terrainShader.loadViewMatrix(camera);
+        terrainRenderer.render(terrains);
+        terrainShader.stop();
+
         entities.clear(); // Clear the list of all entities
+        terrains.clear(); // Clear the list of all terrains
     }
 
     /* This method will add a given entity to its corresponding list if it exists or create a new list if it doesn't */
@@ -68,6 +87,7 @@ public class MainRenderer {
     // Clean up the shader program
     public void cleanUp() {
         shader.cleanUp();
+        terrainShader.cleanUp();
     }
 
     // Prepare for rendering
