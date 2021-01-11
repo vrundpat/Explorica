@@ -60,6 +60,10 @@ public class EntityRenderer {
 
         // Load the damper and reflectivity variables into the shader code from the texture
         ModelTexture texture = model.getTexture();
+        if(texture.getHasTransparency()) {
+            MainRenderer.disableCulling();
+        }
+        shader.loadFakeLighting(texture.getUseFakeLighting());
         shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
 
         // Activate and bind the texture
@@ -68,6 +72,7 @@ public class EntityRenderer {
     }
 
     public void unbindTexturedModel() {
+        MainRenderer.enableCulling();
         GL20.glDisableVertexAttribArray(0); // Disable the vertices VBO after it's rendered
         GL20.glDisableVertexAttribArray(1); // Disable the texture VBO after it's rendered
         GL20.glDisableVertexAttribArray(2); // Disable the normals VBO after it's rendered

@@ -35,14 +35,21 @@ public class MainRenderer {
     private List<Terrain> terrains = new ArrayList<>();
 
     public MainRenderer() {
-
-        // Enabling cull facing on the Back Face prevents rendering of faces on a model that are not in view
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glCullFace(GL11.GL_BACK);
-
+        enableCulling(); // Enable culling
         createProjectionMatrix();
         renderer = new EntityRenderer(shader, projectionMatrix);
         terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+    }
+
+    public static void enableCulling() {
+        // Enabling cull facing on the Back Face prevents rendering of faces on a model that are not in view
+        GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glCullFace(GL11.GL_BACK);
+    }
+
+    public static void disableCulling() {
+        // Disable culling
+        GL11.glDisable(GL11.GL_CULL_FACE);
     }
 
     public void processTerrain(Terrain terrain) {
