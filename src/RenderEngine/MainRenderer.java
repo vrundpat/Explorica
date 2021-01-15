@@ -10,6 +10,7 @@ import Terrains.Terrain;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +23,8 @@ public class MainRenderer {
     private static final float FOV = 70;
     private static final float NEAR_PLANE = 0.1f;
     private static final float FAR_PLANE = 1000;
+
+    private final Vector3f SKY_COLOUR = new Vector3f(0.5f, 0.5f, 0.5f);
 
     private Matrix4f projectionMatrix;
 
@@ -39,6 +42,13 @@ public class MainRenderer {
         createProjectionMatrix();
         renderer = new EntityRenderer(shader, projectionMatrix);
         terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+    }
+
+    // Prepare for rendering
+    public void prepare() {
+        GL11.glEnable(GL11.GL_DEPTH_TEST); // Allow OpenGL to monitor overlapping vertices and render accordingly
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT); // Clear the screen from the previous frame & allow depth buffer testing
+        GL11.glClearColor(SKY_COLOUR.x, SKY_COLOUR.y, SKY_COLOUR.z, 1); // Fill the window with a simple red color
     }
 
     public static void enableCulling() {
@@ -59,6 +69,10 @@ public class MainRenderer {
     public void render(Light light, Camera camera) {
         prepare(); // Prepare renderer (clear window & add depth testing)
         shader.start(); // Start shader program
+
+        // Load in the fog
+        shader.loadSkyColour(SKY_COLOUR.x, SKY_COLOUR.y, SKY_COLOUR.z);
+
         shader.loadLight(light); // Load light variables into the shader code
         shader.loadViewMatrix(camera); // Load view matrix based on the position of the camera
 
@@ -95,13 +109,6 @@ public class MainRenderer {
     public void cleanUp() {
         shader.cleanUp();
         terrainShader.cleanUp();
-    }
-
-    // Prepare for rendering
-    public void prepare() {
-        GL11.glEnable(GL11.GL_DEPTH_TEST); // Allow OpenGL to monitor overlapping vertices and render accordingly
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT); // Clear the screen from the previous frame & allow depth buffer testing
-        GL11.glClearColor(1, 1, 1, 1); // Fill the window with a simple red color
     }
 
     /* Project math converted to code using an online reference, forgot to copy link so now I don't wanna go looking for it...*/

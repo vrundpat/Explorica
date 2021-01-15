@@ -4,6 +4,7 @@ import Entities.Camera;
 import Entities.Light;
 import Tools.Maths;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
 public class StaticShader extends ShaderProgram {
 
@@ -18,6 +19,7 @@ public class StaticShader extends ShaderProgram {
     private int location_shineDamper; // Location of shine damper
     private int location_reflectivity; // Location of reflectivity
     private int location_useFakeLighting; // Location of useFakeLighting
+    private int location_skyColour; // Location of skyColour
 
 
 
@@ -47,6 +49,9 @@ public class StaticShader extends ShaderProgram {
         location_shineDamper = super.getUniformLocation("shineDamper");
         location_reflectivity = super.getUniformLocation("reflectivity");
         location_useFakeLighting = super.getUniformLocation("useFakeLighting");
+
+        // Load fog necessities
+        location_skyColour = super.getUniformLocation("skyColour");
     }
 
     // Load transformation matrix in the shader code
@@ -79,5 +84,9 @@ public class StaticShader extends ShaderProgram {
 
     public void loadFakeLighting(boolean useFakeLighting) {
         super.loadBoolean(location_useFakeLighting, useFakeLighting);
+    }
+
+    public void loadSkyColour(float r, float g, float b) {
+        super.loadVector(location_skyColour, new Vector3f(r, g, b));
     }
 }
