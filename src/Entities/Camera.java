@@ -7,7 +7,7 @@ public class Camera {
 
     // Camera's position
     private Vector3f position = new Vector3f(0, 3, 0);
-    private float pitch; // Angle tangent to ground
+    private float pitch = 5; // Angle tangent to ground
     private float yaw; // Height above ground
     private float roll; // Undefined term for future use
 
@@ -29,8 +29,11 @@ public class Camera {
         if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
             position.x += CAMERA_SPEED;
         }
-        if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+        if(Keyboard.isKeyDown(Keyboard.KEY_Q)) {
             position.y += CAMERA_SPEED;
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_E)) {
+            position.y -= CAMERA_SPEED;
         }
     }
 

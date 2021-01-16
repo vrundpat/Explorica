@@ -7,6 +7,8 @@ import Models.TexturedModel;
 import RenderEngine.*;
 import Models.RawModel;
 import Terrains.Terrain;
+import Terrains.TerrainTexture;
+import Terrains.TerrainTexturePack;
 import Textures.ModelTexture;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
@@ -24,14 +26,26 @@ public class MainLoop {
         // Instantiate a loader
         Loader loader = new Loader();
 
+        // Load up the terrain texture pack
+        TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
+        TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("mud"));
+        TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("grassFlowers"));
+        TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
+
+        TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
+        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
+
+
         RawModel treeModel = OBJLoader.loadObjModel("tree", loader);
         RawModel grassModel = OBJLoader.loadObjModel("grassModel", loader);
         RawModel fernModel = OBJLoader.loadObjModel("fern", loader);
-
+        RawModel lowPolyTreeModel = OBJLoader.loadObjModel("lowPolyTree", loader);
 
         TexturedModel tree = new TexturedModel(treeModel, new ModelTexture(loader.loadTexture("tree")));
         TexturedModel grass = new TexturedModel(grassModel, new ModelTexture(loader.loadTexture("grassTexture")));
         TexturedModel fern = new TexturedModel(fernModel, new ModelTexture(loader.loadTexture("fern")));
+        TexturedModel lowPolyTree = new TexturedModel(lowPolyTreeModel, new ModelTexture(loader.loadTexture("lowPolyTree")));
+        TexturedModel pinkFlower = new TexturedModel(grassModel, new ModelTexture(loader.loadTexture("flower")));
 
         grass.getTexture().setHasTransparency(true);
         fern.getTexture().setHasTransparency(true);
@@ -42,8 +56,8 @@ public class MainLoop {
         Light light = new Light(new Vector3f(200, 200, 100), new Vector3f(1, 1, 1));
         Camera camera = new Camera();
 
-        Terrain terrain = new Terrain(0, -1, loader, new ModelTexture(loader.loadTexture("grass")));
-        Terrain terrain2 = new Terrain(-1, -1, loader, new ModelTexture(loader.loadTexture("grass")));
+        Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap);
+        Terrain terrain2 = new Terrain(-1, -1, loader, texturePack, blendMap);
 
         MainRenderer renderer = new MainRenderer();
 
@@ -55,6 +69,8 @@ public class MainLoop {
             entities.add(new Entity(tree, new Vector3f(random.nextFloat()*800 - 400,0,random.nextFloat() * -600),0,0,0,3));
             entities.add(new Entity(grass, new Vector3f(random.nextFloat()*800 - 400,0,random.nextFloat() * -600),0,0,0,1));
             entities.add(new Entity(fern, new Vector3f(random.nextFloat()*800 - 400,0,random.nextFloat() * -600),0,0,0,0.6f));
+            entities.add(new Entity(lowPolyTree, new Vector3f(random.nextFloat()*800 - 400, 0, random.nextFloat() * -600), 0, 0, 0, 0.6f));
+            entities.add(new Entity(pinkFlower, new Vector3f(random.nextFloat()*800 - 400, 0, random.nextFloat() * -600), 0, 0, 0, 0.6f));
         }
 
         terrains.add(terrain);
