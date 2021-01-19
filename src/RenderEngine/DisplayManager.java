@@ -1,6 +1,7 @@
 package RenderEngine;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.*;
 
 public class DisplayManager {
@@ -28,6 +29,15 @@ public class DisplayManager {
 
         // Set the viewport of the display (top-left & bottom-right)
         GL11.glViewport(0,0,WIN_WIDTH, WIN_HEIGHT);
+
+        // Create the cursor and set it to grabbed so it gets detected only when in the game window
+        try {
+            Mouse.create();
+            Mouse.setGrabbed(true);
+        }
+        catch (LWJGLException error) {
+            error.printStackTrace();
+        }
     }
 
     public static void updateDisplay() {
@@ -38,5 +48,6 @@ public class DisplayManager {
 
     public static void closeDisplay() {
         Display.destroy();
+        Mouse.destroy();
     }
 }
