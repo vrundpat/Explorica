@@ -14,7 +14,8 @@ public class Camera {
     private float roll; // Undefined term for future use
 
     private static final float CAMERA_SPEED = 0.2f;
-    private static float MOUSE_SENSITIVITY = 10f;
+    private static float HORIZONTAL_SENSITIVITY = 10f;
+    private static float VERTICAL_SENSITIVITY = 10f;
 
     public Camera() { }
 
@@ -22,8 +23,10 @@ public class Camera {
     public void move() {
 
         // Change in the
-        float x = Mouse.getDX() / MOUSE_SENSITIVITY;
+        float x = Mouse.getDX() / HORIZONTAL_SENSITIVITY;
+        float y = -(Mouse.getDY() / VERTICAL_SENSITIVITY);
         yaw += x;
+        pitch += y;
 
         if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
             position.z += -(float)Math.cos(Math.toRadians(yaw)) * CAMERA_SPEED;
@@ -53,8 +56,11 @@ public class Camera {
         }
     }
 
-    public void updateMouseSentivity(float delta) {
-        MOUSE_SENSITIVITY += delta;
+    public void updateHorizontalSensitivity(float delta) {
+        HORIZONTAL_SENSITIVITY += delta;
+    }
+    public void updateVerticalSensitivity(float delta) {
+        VERTICAL_SENSITIVITY += delta;
     }
 
     // Getters
