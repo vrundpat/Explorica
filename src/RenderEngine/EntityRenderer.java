@@ -5,7 +5,7 @@ import Models.RawModel;
 import Models.TexturedModel;
 import Shaders.StaticShader;
 import Textures.ModelTexture;
-import Tools.Maths;
+import Tools.MatrixMath;
 import org.lwjgl.opengl.*;
 import org.lwjgl.util.vector.Matrix4f;
 
@@ -82,7 +82,7 @@ public class EntityRenderer {
 
     public void prepareInstance(Entity entity) {
         // Create a transformation matrix for this entity
-        Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(), entity.getRotX(), entity.getRotY(), entity.getRotZ(), entity.getScale());
+        Matrix4f transformationMatrix = MatrixMath.createTransformationMatrix(entity.getPosition(), entity.getRotX(), entity.getRotY(), entity.getRotZ(), entity.getScale());
         shader.loadTransformationMatrix(transformationMatrix); // Load the matrix into the shader
     }
 }

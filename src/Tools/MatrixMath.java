@@ -4,7 +4,7 @@ import Entities.Camera;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-public class Maths {
+public class MatrixMath {
 
     public static Matrix4f createTransformationMatrix(Vector3f translation, float rx, float ry, float rz, float scale) {
         Matrix4f matrix = new Matrix4f(); // Create a new 4x4 Matrix

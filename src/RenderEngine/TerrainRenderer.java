@@ -1,13 +1,10 @@
 package RenderEngine;
 
-import Entities.Entity;
 import Models.RawModel;
-import Models.TexturedModel;
 import Shaders.TerrainShader;
 import Terrains.Terrain;
 import Terrains.TerrainTexturePack;
-import Textures.ModelTexture;
-import Tools.Maths;
+import Tools.MatrixMath;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
@@ -90,7 +87,7 @@ public class TerrainRenderer {
 
     public void loadModelMatrix(Terrain terrain) {
         // Create a transformation matrix for this entity
-        Matrix4f transformationMatrix = Maths.createTransformationMatrix(new Vector3f(terrain.getX(), 0, terrain.getZ()), 0, 0, 0, 1);
+        Matrix4f transformationMatrix = MatrixMath.createTransformationMatrix(new Vector3f(terrain.getX(), 0, terrain.getZ()), 0, 0, 0, 1);
         shader.loadTransformationMatrix(transformationMatrix); // Load the matrix into the shader
     }
 }

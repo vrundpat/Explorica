@@ -2,7 +2,7 @@ package Shaders;
 
 import Entities.Camera;
 import Entities.Light;
-import Tools.Maths;
+import Tools.MatrixMath;
 import org.lwjgl.util.vector.Matrix4f;
 
 public class TerrainShader extends ShaderProgram {
@@ -73,7 +73,7 @@ public class TerrainShader extends ShaderProgram {
 
     // Load view matrix in the shader code
     public void loadViewMatrix(Camera camera) {
-        Matrix4f viewMatrix = Maths.createViewMatrix(camera);
+        Matrix4f viewMatrix = MatrixMath.createViewMatrix(camera);
         super.loadMatrix(location_viewMatrix, viewMatrix);
     }
 
