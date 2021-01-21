@@ -1,6 +1,6 @@
 package Entities;
 
-import org.lwjgl.Sys;
+import RenderEngine.DisplayManager;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -14,64 +14,90 @@ public class Camera {
     private static final float Z = 0;
 
     private Vector3f position = new Vector3f(X, Y, Z);
-    private float pitch = 5; // Angle tangent to ground
+
+    // Camera presets
+    private float pitch = 5; // Angle of the camera tangent to the ground
     private float yaw = (-Display.getWidth() - (float) Mouse.getX() / 4); // Horizontal offsets of the camera
     private float roll; // Distance of the camera from another entity, for a future player model
 
-    private static final float CAMERA_SPEED = 0.2f;
+    // Camera movement controllable variables
+    private static final float CAMERA_SPEED = 20f;
     private static float HORIZONTAL_SENSITIVITY = 10f;
     private static float VERTICAL_SENSITIVITY = 10f;
 
+    // "Environment" variables
+    private static final float GRAVITY = -60f;
+    private static final float JUMP_POWER = 25f;
     private static final float TERRAIN_HEIGHT = Y;
+
+    private float currentUpwardsSpeed = 0;
+    private boolean didJump = false;
 
     public Camera() { }
 
     // Based on given keyboard inputs, move the camera
     public void move() {
 
-        // Change in the
-        float x = Mouse.getDX() / HORIZONTAL_SENSITIVITY;
-        float y = -(Mouse.getDY() / VERTICAL_SENSITIVITY);
-        yaw += x;
+        // Change in the mouse cursor position since the last frame
+        float dx = Mouse.getDX() / HORIZONTAL_SENSITIVITY;
+        float dy = -(Mouse.getDY() / VERTICAL_SENSITIVITY); // Negative due to the 2D pixel coordinate system
+        yaw += dx;
 
         // If the pitch becomes obtuse, it will invert terrain and view matrices, thus a limit
         // is added allowing only positive and negative acute angles
-        if(pitch + y < 90 && pitch + y > -90) {
-            pitch += y;
-        }
+        if(pitch + dy < 90 && pitch + dy > -90) {  pitch += dy;  }
 
-        if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
-            position.z += -(float)Math.cos(Math.toRadians(yaw)) * CAMERA_SPEED;
-            position.x += (float)Math.sin(Math.toRadians(yaw)) * CAMERA_SPEED;
-        }
-        if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
-            position.z -= (float)Math.sin(Math.toRadians(yaw)) * CAMERA_SPEED;
-            position.x -= (float)Math.cos(Math.toRadians(yaw)) * CAMERA_SPEED;
-        }
-        if(Keyboard.isKeyDown(Keyboard.KEY_S)) {
-            position.z -= -(float)Math.cos(Math.toRadians(yaw)) * CAMERA_SPEED;
-            position.x -= (float)Math.sin(Math.toRadians(yaw)) * CAMERA_SPEED;
-        }
-        if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
-            position.z += (float)Math.sin(Math.toRadians(yaw)) * CAMERA_SPEED;
-            position.x += (float)Math.cos(Math.toRadians(yaw)) * CAMERA_SPEED;
-        }
-        if(Keyboard.isKeyDown(Keyboard.KEY_E)) {
-            position.y -= CAMERA_SPEED;
-        }
-        if(Keyboard.isKeyDown(Keyboard.KEY_Q)) {
-            position.y += CAMERA_SPEED;
-        }
+        // Time since last frame which will be used to calculate the speed of the camera
+        // This way if frames skip or frame times vary, the camera won't "teleport"
+        final float delta = DisplayManager.getDelta();
+
+        // Poll keyboard events
+        checkInputs(delta);
+
+        // Calculate the current upwards velocity since the last frame and change the camera's Y position
+        // based on the frame time interval of that upwards speed
+        currentUpwardsSpeed += GRAVITY * delta;
+        position.y += currentUpwardsSpeed * delta;
 
         // Collision detection with the flat terrain
         if(position.y < TERRAIN_HEIGHT) {
             position.y = TERRAIN_HEIGHT;
+            currentUpwardsSpeed = 0;
+            didJump = false;
         }
+    }
+
+    private void checkInputs(float delta) {
+        if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
+            position.z += -(float)Math.cos(Math.toRadians(yaw)) * CAMERA_SPEED * delta;
+            position.x += (float)Math.sin(Math.toRadians(yaw)) * CAMERA_SPEED * delta;
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
+            position.z -= (float)Math.sin(Math.toRadians(yaw)) * CAMERA_SPEED * delta;
+            position.x -= (float)Math.cos(Math.toRadians(yaw)) * CAMERA_SPEED * delta;
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_S)) {
+            position.z -= -(float)Math.cos(Math.toRadians(yaw)) * CAMERA_SPEED * delta;
+            position.x -= (float)Math.sin(Math.toRadians(yaw)) * CAMERA_SPEED * delta;
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
+            position.z += (float)Math.sin(Math.toRadians(yaw)) * CAMERA_SPEED * delta;
+            position.x += (float)Math.cos(Math.toRadians(yaw)) * CAMERA_SPEED * delta;
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_SPACE) && !didJump) {
+            jump();
+        }
+    }
+
+    private void jump() {
+        this.currentUpwardsSpeed = JUMP_POWER;
+        didJump = true;
     }
 
     public void updateHorizontalSensitivity(float delta) {
         HORIZONTAL_SENSITIVITY += delta;
     }
+
     public void updateVerticalSensitivity(float delta) {
         VERTICAL_SENSITIVITY += delta;
     }
