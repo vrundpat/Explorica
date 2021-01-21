@@ -1,6 +1,7 @@
 package Entities;
 
 import RenderEngine.DisplayManager;
+import Terrains.Terrain;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -9,9 +10,9 @@ import org.lwjgl.util.vector.Vector3f;
 public class Camera {
 
     // Camera's position
-    private static final float X = 0;
-    private static final float Y = 3;
-    private static final float Z = 0;
+    private static final float X = 100;
+    private static final float Y = 5;
+    private static final float Z = 500;
 
     private Vector3f position = new Vector3f(X, Y, Z);
 
@@ -21,14 +22,14 @@ public class Camera {
     private float roll; // Distance of the camera from another entity, for a future player model
 
     // Camera movement controllable variables
-    private static final float CAMERA_SPEED = 20f;
+    private static final float CAMERA_SPEED = 30f;
     private static float HORIZONTAL_SENSITIVITY = 10f;
     private static float VERTICAL_SENSITIVITY = 10f;
 
     // "Environment" variables
-    private static final float GRAVITY = -60f;
+    private static final float GRAVITY = -50f;
     private static final float JUMP_POWER = 25f;
-    private static final float TERRAIN_HEIGHT = Y;
+    private static final float PLAYER_HEIGHT = 10;
 
     private float currentUpwardsSpeed = 0;
     private boolean didJump = false;
@@ -36,7 +37,7 @@ public class Camera {
     public Camera() { }
 
     // Based on given keyboard inputs, move the camera
-    public void move() {
+    public void move(Terrain terrain) {
 
         // Change in the mouse cursor position since the last frame
         float dx = Mouse.getDX() / HORIZONTAL_SENSITIVITY;
@@ -59,9 +60,12 @@ public class Camera {
         currentUpwardsSpeed += GRAVITY * delta;
         position.y += currentUpwardsSpeed * delta;
 
-        // Collision detection with the flat terrain
-        if(position.y < TERRAIN_HEIGHT) {
-            position.y = TERRAIN_HEIGHT;
+        // Get the terrain height at the updated camera position
+        float terrainHeight = terrain.getHeightOfTerrain(position.x, position.z) + PLAYER_HEIGHT;
+
+        // Collision detection with the terrain at this position in the world
+        if(position.y < terrainHeight) {
+            position.y = terrainHeight;
             currentUpwardsSpeed = 0;
             didJump = false;
         }
@@ -116,4 +120,6 @@ public class Camera {
     }
 
     public float getRoll() {  return roll; }
+
+    public static float getPlayerHeight() { return PLAYER_HEIGHT; }
 }

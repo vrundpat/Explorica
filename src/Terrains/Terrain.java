@@ -2,6 +2,8 @@ package Terrains;
 
 import Models.RawModel;
 import RenderEngine.Loader;
+import Tools.MatrixMath;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import javax.imageio.ImageIO;
@@ -16,6 +18,8 @@ public class Terrain {
 
     private float x;
     private float z;
+    private float[][] heights;
+
     private RawModel model;
     private TerrainTexturePack texturePack;
     private TerrainTexture blendMap;
@@ -43,6 +47,7 @@ public class Terrain {
         }
 
         int VERTEX_COUNT = image.getHeight();
+        heights = new float[VERTEX_COUNT][VERTEX_COUNT];
 
         int count = VERTEX_COUNT * VERTEX_COUNT;
         float[] vertices = new float[count * 3];
@@ -53,13 +58,20 @@ public class Terrain {
 
         for (int i = 0; i < VERTEX_COUNT; i++) {
             for (int j = 0; j < VERTEX_COUNT; j++) {
+                // Vertex calculations
+                float height = getHeight(j, i, image);
+                heights[j][i] = height;
                 vertices[vertexPointer * 3] = (float) j / ((float) VERTEX_COUNT - 1) * SIZE;
-                vertices[vertexPointer * 3 + 1] = getHeight(j, i, image);
+                vertices[vertexPointer * 3 + 1] = height;
                 vertices[vertexPointer * 3 + 2] = (float) i / ((float) VERTEX_COUNT - 1) * SIZE;
+
+                // Normal calculations
                 Vector3f normal = calculateNormal(j, i, image);
                 normals[vertexPointer * 3] = normal.x;
                 normals[vertexPointer * 3 + 1] = normal.y;
                 normals[vertexPointer * 3 + 2] = normal.z;
+
+                // Texture calculations
                 textureCoords[vertexPointer * 2] = (float) j / ((float) VERTEX_COUNT - 1);
                 textureCoords[vertexPointer * 2 + 1] = (float) i / ((float) VERTEX_COUNT - 1);
                 vertexPointer++;
@@ -81,6 +93,40 @@ public class Terrain {
             }
         }
         return loader.loadToVAO(vertices, textureCoords, normals, indices);
+    }
+
+    public float getHeightOfTerrain(float worldX, float worldZ) {
+        float terrainX = worldX - this.x; // x index into tile into the terrain
+        float terrainZ = worldZ - this.z; // z index into a tile in the terrain
+
+        // Size of the terrain tile
+        float gridSquareSize = SIZE / ((float) heights.length - 1);
+
+        // Calculate the X and Z coordinates of the worldX and worldZ into the tile
+        int gridX = (int) Math.floor(terrainX / gridSquareSize);
+        int gridZ = (int) Math.floor(terrainZ / gridSquareSize);
+        if(gridX < 0 || gridX >= heights.length - 1 || gridZ < 0 || gridZ >= heights.length - 1) {
+            return 0;
+        }
+
+        // X and Z coordinates of the specific quad made from the triangles in this tile
+        float xCoordinate = (terrainZ % gridSquareSize);
+        float zCoordinate = (terrainX % gridSquareSize);
+        float height;
+
+        // If the coordinates are a part of the left triangle in the quad
+        if (xCoordinate <= (1- zCoordinate)) {
+            height = MatrixMath.barryCentric(new Vector3f(0, heights[gridX][gridZ], 0), new Vector3f(1,
+                            heights[gridX + 1][gridZ], 0), new Vector3f(0,
+                            heights[gridX][gridZ + 1], 1), new Vector2f(xCoordinate, zCoordinate));
+        }
+        // Coordinates are a part of the right triangle in the quad
+        else {
+            height = MatrixMath.barryCentric(new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(1,
+                            heights[gridX + 1][gridZ + 1], 1), new Vector3f(0,
+                            heights[gridX][gridZ + 1], 1), new Vector2f(xCoordinate, zCoordinate));
+        }
+        return height;
     }
 
     // Calculate the normal of a vertex based on the heights of the surrounding heights in the height map
