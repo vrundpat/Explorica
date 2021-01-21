@@ -24,7 +24,7 @@ public class MainRenderer {
     private static final float NEAR_PLANE = 0.1f;
     private static final float FAR_PLANE = 1000;
 
-    private final Vector3f SKY_COLOUR = new Vector3f(235/255f, 233/255f, 230/255f);
+    private final Vector3f SKY_COLOUR = new Vector3f(0, 0, 0);
 
     private Matrix4f projectionMatrix;
 

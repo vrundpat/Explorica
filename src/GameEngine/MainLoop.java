@@ -35,7 +35,6 @@ public class MainLoop {
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
-
         RawModel treeModel = OBJLoader.loadObjModel("tree", loader);
         RawModel grassModel = OBJLoader.loadObjModel("grassModel", loader);
         RawModel fernModel = OBJLoader.loadObjModel("fern", loader);
