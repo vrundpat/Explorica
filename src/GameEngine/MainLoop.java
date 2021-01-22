@@ -104,12 +104,12 @@ public class MainLoop {
             //  3. Render updated entities
             camera.move(terrains[gridX][gridZ]);
 
+            renderer.processTerrain(terrains[0][0]);
+            renderer.processTerrain(terrains[0][1]);
+
             for(Entity object : entities) {
                 renderer.processEntity(object);
             }
-
-            renderer.processTerrain(terrains[0][0]);
-            renderer.processTerrain(terrains[0][1]);
 
             renderer.render(light, camera);
 

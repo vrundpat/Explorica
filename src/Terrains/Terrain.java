@@ -110,8 +110,8 @@ public class Terrain {
         }
 
         // X and Z coordinates of the specific quad made from the triangles in this tile
-        float xCoordinate = (terrainZ % gridSquareSize);
-        float zCoordinate = (terrainX % gridSquareSize);
+        float xCoordinate = (terrainX % gridSquareSize) / gridSquareSize;
+        float zCoordinate = (terrainZ % gridSquareSize) / gridSquareSize;
         float height;
 
         // If the coordinates are a part of the left triangle in the quad
@@ -134,7 +134,7 @@ public class Terrain {
         float heightL = getHeight(x-1,    z  , image);
         float heightR = getHeight(x+1,    z  , image);
         float heightD = getHeight(   x  , z-1, image);
-        float heightU = getHeight(x-1, z+1, image);
+        float heightU = getHeight(   x  , z+1, image);
 
         Vector3f normal = new Vector3f(heightL - heightR, 2f, heightD - heightU);
         normal.normalise();
