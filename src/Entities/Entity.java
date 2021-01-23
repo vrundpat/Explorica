@@ -11,6 +11,8 @@ public class Entity {
     private float rotX, rotY, rotZ; // Rotation variables
     private float scale; // Scale is how large this entity will be
 
+    private int textureIndex = 0; // Index into the texture atlas for an entity
+
     public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
         this.model = model;
         this.position = position;
@@ -18,6 +20,17 @@ public class Entity {
         this.rotY = rotY;
         this.rotZ = rotZ;
         this.scale = scale;
+    }
+
+    // Constructor with a texture index for entities using texture atlases
+    public Entity(TexturedModel model, int index, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
+        this.model = model;
+        this.position = position;
+        this.rotX = rotX;
+        this.rotY = rotY;
+        this.rotZ = rotZ;
+        this.scale = scale;
+        this.textureIndex = index;
     }
 
     // Based on given params, increase the position vector
@@ -32,6 +45,17 @@ public class Entity {
         this.rotX += rx;
         this.rotY += ry;
         this.rotZ += rz;
+    }
+
+    // Returns the offset into the texture atlas which will be used to calculate new texture coordinates
+    public float getTextureXOffset() {
+        int column = textureIndex % model.getTexture().getNumberOfRows();
+        return (float) column / (float) model.getTexture().getNumberOfRows();
+    }
+
+    public float getTextureYOffset() {
+        int row = textureIndex / model.getTexture().getNumberOfRows();
+        return (float) row / (float) model.getTexture().getNumberOfRows();
     }
 
     // Getters
@@ -61,7 +85,6 @@ public class Entity {
 
 
     // Setters
-
     public void setModel(TexturedModel model) {
         this.model = model;
     }

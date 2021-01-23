@@ -58,8 +58,10 @@ public class EntityRenderer {
         GL20.glEnableVertexAttribArray(1); // Enable the texture VBO
         GL20.glEnableVertexAttribArray(2); // Enable the normals VBO
 
-        // Load the damper and reflectivity variables into the shader code from the texture
+        // Load the damper and reflectivity & texture atlas & variables into the shader code from the texture
         ModelTexture texture = model.getTexture();
+        shader.loadNumberOfRows(texture.getNumberOfRows());
+
         if(texture.getHasTransparency()) {
             MainRenderer.disableCulling();
         }
@@ -84,5 +86,6 @@ public class EntityRenderer {
         // Create a transformation matrix for this entity
         Matrix4f transformationMatrix = MatrixMath.createTransformationMatrix(entity.getPosition(), entity.getRotX(), entity.getRotY(), entity.getRotZ(), entity.getScale());
         shader.loadTransformationMatrix(transformationMatrix); // Load the matrix into the shader
+        shader.loadOffset(entity.getTextureXOffset(), entity.getTextureYOffset()); // Load the offset into the texture atlas for this entity
     }
 }

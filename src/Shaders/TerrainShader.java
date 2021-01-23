@@ -79,8 +79,8 @@ public class TerrainShader extends ShaderProgram {
 
     // Load light position & colour into the shader code
     public void loadLight(Light light) {
-        super.loadVector(location_lightPosition, light.getPosition());
-        super.loadVector(location_lightColour, light.getColour());
+        super.load3DVector(location_lightPosition, light.getPosition());
+        super.load3DVector(location_lightColour, light.getColour());
     }
 
     // Load the damper and reflectivity variables in the shader code

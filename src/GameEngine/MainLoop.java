@@ -19,22 +19,22 @@ import java.util.Random;
 
 public class MainLoop {
 
-    public static void generateModel(TexturedModel model, List<Entity> entities, Terrain[][] terrains, float scale, int count) {
+    public static void generateModel(TexturedModel model, List<Entity> entities, Terrain[][] terrains, float scale, int count, int numberOfCols) {
         Random random = new Random();
         for(int i = 0; i < count / 2; i++){
             float x = random.nextFloat() * 800;
-            float z = random.nextFloat() * 600;
+            float z = random.nextFloat() * 800;
             float y = terrains[0][0].getHeightOfTerrain(x, z);
 
-            entities.add(new Entity(model, new Vector3f(x, y, z),0,0,0, scale));
+            entities.add(new Entity(model, random.nextInt(numberOfCols), new Vector3f(x, y, z),0,0,0, scale));
         }
 
         for(int i = 0; i < count / 2; i++){
-            float x = random.nextFloat() * 1600;
-            float z = random.nextFloat() * 1200;
-            float y = terrains[0][0].getHeightOfTerrain(x, z);
+            float x = random.nextFloat() * 800;
+            float z = random.nextFloat() * 1600;
+            float y = z > 800 ? terrains[0][1].getHeightOfTerrain(x, z) : terrains[0][0].getHeightOfTerrain(x, z);
 
-            entities.add(new Entity(model, new Vector3f(x, y, z),0,0,0, scale));
+            entities.add(new Entity(model, random.nextInt(numberOfCols), new Vector3f(x, y, z),0,0,0, scale));
         }
     }
 
@@ -58,13 +58,16 @@ public class MainLoop {
         RawModel treeModel = OBJLoader.loadObjModel("tree", loader);
         RawModel grassModel = OBJLoader.loadObjModel("grassModel", loader);
         RawModel fernModel = OBJLoader.loadObjModel("fern", loader);
-        RawModel lowPolyTreeModel = OBJLoader.loadObjModel("lowPolyTree", loader);
+        RawModel pineTreeModel = OBJLoader.loadObjModel("pine", loader);
+
+        // Texture Atlases
+        ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern")); fernTextureAtlas.setNumberOfRows(2);
 
         TexturedModel tree = new TexturedModel(treeModel, new ModelTexture(loader.loadTexture("tree")));
         TexturedModel grass = new TexturedModel(grassModel, new ModelTexture(loader.loadTexture("grassTexture")));
         TexturedModel fern = new TexturedModel(fernModel, new ModelTexture(loader.loadTexture("fern")));
-        TexturedModel lowPolyTree = new TexturedModel(lowPolyTreeModel, new ModelTexture(loader.loadTexture("lowPolyTree")));
         TexturedModel pinkFlower = new TexturedModel(grassModel, new ModelTexture(loader.loadTexture("flower")));
+        TexturedModel pineTree = new TexturedModel(pineTreeModel, new ModelTexture(loader.loadTexture("pine")));
 
         grass.getTexture().setHasTransparency(true);
         fern.getTexture().setHasTransparency(true);
@@ -88,10 +91,10 @@ public class MainLoop {
         terrains[0][0] = terrain;
         terrains[0][1] = terrain2;
 
-        generateModel(lowPolyTree, entities, terrains, 3, 200);
-        generateModel(tree, entities, terrains, 3, 500);
-        generateModel(grass, entities, terrains, 1, 500);
-        generateModel(fern, entities, terrains, 1, 500);
+        generateModel(pineTree, entities, terrains, 3, 500, 1);
+        generateModel(tree, entities, terrains, 3, 500, 1);
+        generateModel(grass, entities, terrains, 1, 500, 1);
+        generateModel(fern, entities, terrains, 1, 500, 4);
 
         // Loop until the 'X' is clicked on the game window
         while(!Display.isCloseRequested()) {
