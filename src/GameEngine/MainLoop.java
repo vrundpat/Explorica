@@ -38,16 +38,32 @@ public class MainLoop {
         }
     }
 
-    public static void generateLights(List<Light> lights) {
-        lights.add(new Light(new Vector3f(0, 500, 0), new Vector3f(1, 1, 1)));
+    public static void generateLights(List<Light> lights, Terrain[][] terrains, List<Entity> entities, Loader loader, int count) {
+        // The Sun/Moon; Light source that doesn't attenuate
+        lights.add(new Light(new Vector3f(0, 1000, 0), new Vector3f(0.2f, 0.2f, 0.2f)));
+
+        RawModel lampModel = OBJLoader.loadObjModel("lamp", loader);
+        TexturedModel lamp = new TexturedModel(lampModel, new ModelTexture(loader.loadTexture("lamp")));
+
+        lamp.getTexture().setUseFakeLighting(true);
+
+        // Generate attenuating lights (limited by range)
+        Random random = new Random();
+        for(int i = 0; i < count; i++){
+            float x = random.nextFloat() * 800;
+            float z = random.nextFloat() * 1600;
+            float y = z > 800 ? terrains[0][1].getHeightOfTerrain(x, z) : terrains[0][0].getHeightOfTerrain(x, z);
+
+            lights.add(new Light(new Vector3f(x, y + 15, z), new Vector3f(0, 5, 0), new Vector3f(1, 0.1f, 0.002f)));
+            entities.add(new Entity(lamp, new Vector3f(x, y, z), 0, 0, 0, 1));
+        }
     }
 
     public static void main(String[] args) {
 
-        // Create the Display
         DisplayManager.createDisplay();
 
-        // Instantiate a loader
+        // Takes care of loading in textures and 3D .obj models
         Loader loader = new Loader();
 
         // Load up the terrain texture pack
@@ -59,7 +75,6 @@ public class MainLoop {
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
-        RawModel treeModel = OBJLoader.loadObjModel("tree", loader);
         RawModel grassModel = OBJLoader.loadObjModel("grassModel", loader);
         RawModel fernModel = OBJLoader.loadObjModel("fern", loader);
         RawModel pineTreeModel = OBJLoader.loadObjModel("pine", loader);
@@ -67,7 +82,6 @@ public class MainLoop {
         // Texture Atlases
         ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern")); fernTextureAtlas.setNumberOfRows(2);
 
-        TexturedModel tree = new TexturedModel(treeModel, new ModelTexture(loader.loadTexture("tree")));
         TexturedModel grass = new TexturedModel(grassModel, new ModelTexture(loader.loadTexture("grassTexture")));
         TexturedModel fern = new TexturedModel(fernModel, new ModelTexture(loader.loadTexture("fern")));
         TexturedModel pinkFlower = new TexturedModel(grassModel, new ModelTexture(loader.loadTexture("flower")));
@@ -92,13 +106,12 @@ public class MainLoop {
         List<Light> lights = new ArrayList<>();
         Terrain[][] terrains = new Terrain[1][2];
 
-        generateLights(lights);
-
         terrains[0][0] = terrain;
         terrains[0][1] = terrain2;
 
+        generateLights(lights, terrains, entities, loader, 10);
+
         generateModel(pineTree, entities, terrains, 3, 500, 1);
-        generateModel(tree, entities, terrains, 3, 500, 1);
         generateModel(grass, entities, terrains, 1, 500, 1);
         generateModel(fern, entities, terrains, 1, 500, 4);
 

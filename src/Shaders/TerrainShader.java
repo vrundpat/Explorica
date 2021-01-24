@@ -4,13 +4,12 @@ import Entities.Camera;
 import Entities.Light;
 import Tools.MatrixMath;
 import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
 
 import java.util.List;
 
 public class TerrainShader extends ShaderProgram {
 
-    private static final int NUM_LIGHTS = 1;
+    private static final int NUM_LIGHTS = 10;
 
     private static final String VERTEX_FILE = "src/Shaders/TerrainVertexShader.txt";
     private static final String FRAGMENT_FILE = "src/Shaders/TerrainFragmentShader.txt";
@@ -18,8 +17,10 @@ public class TerrainShader extends ShaderProgram {
     private int location_transformationMatrix; // Location of the transformation matrix variable in shader code
     private int location_projectionMatrix; // Location of project matrix variable in the shader code
     private int location_viewMatrix; // Location of tbe view matrix variable in the shader code
+
     private int[] location_lightPosition; // Location of the light position in the shader code
     private int[] location_lightColour; // Location of the light colour in the shader code
+    private int[] location_attenuation;
     private int location_shineDamper; // Location of shine damper
     private int location_reflectivity; // Location of reflectivity
     private int location_numberOfLights;
@@ -60,10 +61,12 @@ public class TerrainShader extends ShaderProgram {
 
         location_lightPosition = new int[NUM_LIGHTS];
         location_lightColour = new int[NUM_LIGHTS];
+        location_attenuation = new int[NUM_LIGHTS];
 
         for(int i = 0; i < NUM_LIGHTS; i++) {
             location_lightPosition[i] = super.getUniformLocation("lightPosition[" + i + "]");
             location_lightColour[i] = super.getUniformLocation("lightColour[" + i + "]");
+            location_attenuation[i] = super.getUniformLocation("attenuation[" + i + "]");
         }
 
         // Texture Pack
@@ -100,6 +103,7 @@ public class TerrainShader extends ShaderProgram {
             if(i < lights.size()) {
                 super.load3DVector(location_lightPosition[i], lights.get(i).getPosition());
                 super.load3DVector(location_lightColour[i], lights.get(i).getColour());
+                super.load3DVector(location_attenuation[i], lights.get(i).getAttenuation());
             }
         }
     }
