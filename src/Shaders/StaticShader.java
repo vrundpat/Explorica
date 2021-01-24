@@ -7,23 +7,27 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
+import java.util.List;
+
 public class StaticShader extends ShaderProgram {
 
     private static final String VERTEX_FILE = "src/Shaders/VertexShader.txt";
     private static final String FRAGMENT_FILE = "src/Shaders/FragmentShader.txt";
 
+    private static final int NUM_LIGHTS = 1;
+
     private int location_transformationMatrix; // Location of the transformation matrix variable in shader code
     private int location_projectionMatrix; // Location of project matrix variable in the shader code
     private int location_viewMatrix; // Location of tbe view matrix variable in the shader code
-    private int location_lightPosition; // Location of the light position in the shader code
-    private int location_lightColour; // Location of the light colour in the shader code
+    private int[] location_lightPosition; // Location of the light position in the shader code
+    private int[] location_lightColour; // Location of the light colour in the shader code
     private int location_shineDamper; // Location of shine damper
     private int location_reflectivity; // Location of reflectivity
     private int location_useFakeLighting; // Location of useFakeLighting
     private int location_skyColour; // Location of skyColour
     private int location_numberOfRows;
     private int location_offset;
-
+    private int location_numberOfLights;
 
 
     public StaticShader() {
@@ -47,11 +51,19 @@ public class StaticShader extends ShaderProgram {
         location_viewMatrix = super.getUniformLocation("viewMatrix");
 
         // Loading the necessities for the lighting
-        location_lightPosition = super.getUniformLocation("lightPosition");
-        location_lightColour = super.getUniformLocation("lightColour");
         location_shineDamper = super.getUniformLocation("shineDamper");
         location_reflectivity = super.getUniformLocation("reflectivity");
         location_useFakeLighting = super.getUniformLocation("useFakeLighting");
+        location_numberOfLights = super.getUniformLocation("numberOfLights");
+
+        // Get the position of all light position and colors at each index
+        location_lightPosition = new int[NUM_LIGHTS];
+        location_lightColour = new int[NUM_LIGHTS];
+
+        for(int i = 0; i < NUM_LIGHTS; i++) {
+            location_lightPosition[i] = super.getUniformLocation("lightPosition[" + i + "]");
+            location_lightColour[i] = super.getUniformLocation("lightColour[" + i + "]");
+        }
 
         // Load fog necessities
         location_skyColour = super.getUniformLocation("skyColour");
@@ -78,9 +90,17 @@ public class StaticShader extends ShaderProgram {
     }
 
     // Load light position & colour into the shader code
-    public void loadLight(Light light) {
-        super.load3DVector(location_lightPosition, light.getPosition());
-        super.load3DVector(location_lightColour, light.getColour());
+    public void loadLights(List<Light> lights) {
+
+        // Load in the number of lights into the shader code
+        super.loadInt(location_numberOfLights, NUM_LIGHTS);
+
+        for(int i = 0; i < NUM_LIGHTS; i++) {
+            if(i < lights.size()) {
+                super.load3DVector(location_lightPosition[i], lights.get(i).getPosition());
+                super.load3DVector(location_lightColour[i], lights.get(i).getColour());
+            }
+        }
     }
 
     // Load the damper and reflectivity variables in the shader code

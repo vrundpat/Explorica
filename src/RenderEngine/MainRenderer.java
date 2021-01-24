@@ -34,7 +34,7 @@ public class MainRenderer {
     private TerrainRenderer terrainRenderer;
     private TerrainShader terrainShader = new TerrainShader();
 
-    private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
+    private Map<TexturedModel, List<Entity>> entities = new HashMap<>();
     private List<Terrain> terrains = new ArrayList<>();
 
     public MainRenderer() {
@@ -66,14 +66,14 @@ public class MainRenderer {
         terrains.add(terrain);
     }
 
-    public void render(Light light, Camera camera) {
+    public void render(List<Light> lights, Camera camera) {
         prepare(); // Prepare renderer (clear window & add depth testing)
         shader.start(); // Start shader program
 
         // Load in the fog
         shader.loadSkyColour(SKY_COLOUR.x, SKY_COLOUR.y, SKY_COLOUR.z);
 
-        shader.loadLight(light); // Load light variables into the shader code
+        shader.loadLights(lights); // Load light variables into the shader code
         shader.loadViewMatrix(camera); // Load view matrix based on the position of the camera
 
         renderer.render(entities); // Render all entities
@@ -81,7 +81,7 @@ public class MainRenderer {
 
         // Render the terrains
         terrainShader.start();
-        terrainShader.loadLight(light);
+        terrainShader.loadLights(lights);
         terrainShader.loadViewMatrix(camera);
         terrainRenderer.render(terrains);
         terrainShader.stop();

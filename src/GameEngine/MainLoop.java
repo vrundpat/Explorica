@@ -38,6 +38,10 @@ public class MainLoop {
         }
     }
 
+    public static void generateLights(List<Light> lights) {
+        lights.add(new Light(new Vector3f(0, 500, 0), new Vector3f(1, 1, 1)));
+    }
+
     public static void main(String[] args) {
 
         // Create the Display
@@ -77,7 +81,6 @@ public class MainLoop {
         fern.getTexture().setUseFakeLighting(true);
         pinkFlower.getTexture().setUseFakeLighting(true);
 
-        Light light = new Light(new Vector3f(200, 500, 100), new Vector3f(1, 1, 1));
         Camera camera = new Camera();
 
         Terrain terrain = new Terrain(0, 0, loader, texturePack, blendMap, "heightmap");
@@ -86,7 +89,10 @@ public class MainLoop {
         MainRenderer renderer = new MainRenderer();
 
         List<Entity> entities = new ArrayList<>();
+        List<Light> lights = new ArrayList<>();
         Terrain[][] terrains = new Terrain[1][2];
+
+        generateLights(lights);
 
         terrains[0][0] = terrain;
         terrains[0][1] = terrain2;
@@ -114,7 +120,7 @@ public class MainLoop {
                 renderer.processEntity(object);
             }
 
-            renderer.render(light, camera);
+            renderer.render(lights, camera);
 
             // Step 2
             DisplayManager.updateDisplay();
