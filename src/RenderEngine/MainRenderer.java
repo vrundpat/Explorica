@@ -25,7 +25,7 @@ public class MainRenderer {
     private static final float NEAR_PLANE = 0.1f;
     private static final float FAR_PLANE = 1000;
 
-    private final Vector3f SKY_COLOUR = new Vector3f(0, 0, 0);
+    private final Vector3f SKY_COLOUR = new Vector3f(1, 1, 1);
 
     private Matrix4f projectionMatrix;
 
@@ -91,7 +91,7 @@ public class MainRenderer {
         terrainShader.stop();
 
         // Render the skybox
-        skyboxRenderer.render(camera);
+        skyboxRenderer.render(camera, SKY_COLOUR);
 
         entities.clear(); // Clear the list of all entities
         terrains.clear(); // Clear the list of all terrains
