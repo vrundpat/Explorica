@@ -29,7 +29,7 @@ public class Camera {
     // "Environment" variables
     private static final float GRAVITY = -50f;
     private static final float JUMP_POWER = 25f;
-    private static final float PLAYER_HEIGHT = 10;
+    private static final float PLAYER_HEIGHT = 5;
 
     private float currentUpwardsSpeed = 0;
     private boolean didJump = false;

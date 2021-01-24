@@ -1,6 +1,8 @@
 package RenderEngine;
 
 import Models.RawModel;
+import Textures.TextureData;
+import de.matthiasmann.twl.utils.PNGDecoder;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 import org.newdawn.slick.opengl.Texture;
@@ -8,6 +10,7 @@ import org.newdawn.slick.opengl.TextureLoader;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -15,9 +18,9 @@ import java.util.List;
 
 public class Loader {
 
-    private List<Integer> VAOS = new ArrayList<Integer>();
-    private List<Integer> VBOS = new ArrayList<Integer>();
-    private List<Integer> TEXTURES = new ArrayList<Integer>();
+    private List<Integer> VAOS = new ArrayList<>();
+    private List<Integer> VBOS = new ArrayList<>();
+    private List<Integer> TEXTURES = new ArrayList<>();
 
 
     public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, int[] indices) {
@@ -29,6 +32,14 @@ public class Loader {
 
         unbindVAO(); // Unbind VAO after creation
         return new RawModel(vaoID, indices.length); // Return its raw model
+    }
+
+    // For possible GUI renders
+    public RawModel loadToVAO(float[] positions, int dimensions) {
+        int vaoID = createVAO();
+        this.storeDataInAttributeList(0, dimensions, positions);
+        unbindVAO();
+        return new RawModel(vaoID, positions.length / dimensions);
     }
 
     public int loadTexture(String filename) {
@@ -46,6 +57,7 @@ public class Loader {
             e.printStackTrace();
         }
 
+        assert texture != null;
         int textureID = texture.getTextureID();
         TEXTURES.add(textureID);
         return textureID;
@@ -93,6 +105,64 @@ public class Loader {
         buffer.put(indices); // Put the data
         buffer.flip(); // Flip to signify stoppage of writes
         return buffer;
+    }
+
+    /*
+        GL Cube Map Apparatus:
+            GL_TEXTURE_CUBE_MAP_POSITIVE_X = Right Face
+            GL_TEXTURE_CUBE_MAP_NEGATIVE_X = Left Face
+            GL_TEXTURE_CUBE_MAP_POSITIVE_Y = Top Face
+            GL_TEXTURE_CUBE_MAP_NEGATIVE_Y = Bottom Face
+            GL_TEXTURE_CUBE_MAP_POSITIVE_Z = Back Face
+            GL_TEXTURE_CUBE_MAP_NEGATIVE_Z = Front Face
+
+            The difference starting from the RIGHT face to the FRONT face is 1 each, so it can be
+            manipulated using a loop to generating an entire cube map with regards to
+            GL_TEXTURE_CUBE_MAP_POSITIVE_X
+     */
+    public int loadCubeMap(String[] textureFiles) {
+        int textureID = GL11.glGenTextures();
+        GL13.glActiveTexture(textureID);
+        GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, textureID);
+
+        for(int i = 0; i < textureFiles.length; i++) {
+            TextureData data = decodeTextureFile("src/Resources/SkyboxImages/" + textureFiles[i] + ".png");
+            GL11.glTexImage2D(GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL11.GL_RGBA, data.getWidth(), data.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, data.getBuffer());
+        }
+
+        // Identify texture parameters using linear vectors for the Cube Map
+        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+
+        TEXTURES.add(textureID); // Store the Cube Map TextureID so it can be safely removed on clean up
+
+        return textureID;
+    }
+
+    // Decodes a texture file using byte buffers for textures compatible with the 3D coordinate system
+    private TextureData decodeTextureFile(String fileName) {
+        int width = 0;
+        int height = 0;
+
+        ByteBuffer buffer = null;
+        try {
+            FileInputStream in = new FileInputStream(fileName);
+            PNGDecoder decoder = new PNGDecoder(in);
+
+            width = decoder.getWidth();
+            height = decoder.getHeight();
+            buffer = ByteBuffer.allocateDirect(4 * width * height);
+            decoder.decode(buffer, width * 4, PNGDecoder.Format.RGBA);
+            buffer.flip(); // Finish writing, and prep for reading
+            in.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error loading Texture: " + fileName + "using ByteBuffers");
+            System.exit(-1);
+        }
+
+        return new TextureData(buffer, width, height);
     }
 
     private void unbindVAO() {

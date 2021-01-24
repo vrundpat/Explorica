@@ -100,7 +100,7 @@ public class MainLoop {
         Terrain terrain = new Terrain(0, 0, loader, texturePack, blendMap, "heightmap");
         Terrain terrain2 = new Terrain(0, 1, loader, texturePack, blendMap, "heightmap");
 
-        MainRenderer renderer = new MainRenderer();
+        MainRenderer renderer = new MainRenderer(loader);
 
         List<Entity> entities = new ArrayList<>();
         List<Light> lights = new ArrayList<>();
@@ -111,7 +111,7 @@ public class MainLoop {
 
         generateLights(lights, terrains, entities, loader, 10);
 
-        generateModel(pineTree, entities, terrains, 3, 500, 1);
+        generateModel(pineTree, entities, terrains, 2, 500, 1);
         generateModel(grass, entities, terrains, 1, 500, 1);
         generateModel(fern, entities, terrains, 1, 500, 4);
 

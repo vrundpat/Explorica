@@ -6,6 +6,7 @@ import Entities.Light;
 import Models.TexturedModel;
 import Shaders.StaticShader;
 import Shaders.TerrainShader;
+import Skybox.SkyboxRenderer;
 import Terrains.Terrain;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -34,14 +35,17 @@ public class MainRenderer {
     private TerrainRenderer terrainRenderer;
     private TerrainShader terrainShader = new TerrainShader();
 
+    private SkyboxRenderer skyboxRenderer;
+
     private Map<TexturedModel, List<Entity>> entities = new HashMap<>();
     private List<Terrain> terrains = new ArrayList<>();
 
-    public MainRenderer() {
+    public MainRenderer(Loader loader) {
         enableCulling(); // Enable culling
         createProjectionMatrix();
         renderer = new EntityRenderer(shader, projectionMatrix);
         terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+        skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
     }
 
     // Prepare for rendering
@@ -85,6 +89,9 @@ public class MainRenderer {
         terrainShader.loadViewMatrix(camera);
         terrainRenderer.render(terrains);
         terrainShader.stop();
+
+        // Render the skybox
+        skyboxRenderer.render(camera);
 
         entities.clear(); // Clear the list of all entities
         terrains.clear(); // Clear the list of all terrains
