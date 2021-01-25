@@ -25,7 +25,7 @@ public class MainRenderer {
     private static final float NEAR_PLANE = 0.1f;
     private static final float FAR_PLANE = 1000;
 
-    private final Vector3f SKY_COLOUR = new Vector3f(1, 1, 1);
+    private Vector3f SKY_COLOUR;
 
     private Matrix4f projectionMatrix;
 
@@ -52,7 +52,7 @@ public class MainRenderer {
     public void prepare() {
         GL11.glEnable(GL11.GL_DEPTH_TEST); // Allow OpenGL to monitor overlapping vertices and render accordingly
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT); // Clear the screen from the previous frame & allow depth buffer testing
-        GL11.glClearColor(SKY_COLOUR.x, SKY_COLOUR.y, SKY_COLOUR.z, 1); // Fill the window with a simple red color
+        GL11.glClearColor(1, 1, 1, 1); // Fill the window with a simple red color
     }
 
     public static void enableCulling() {
@@ -73,6 +73,8 @@ public class MainRenderer {
     public void render(List<Light> lights, Camera camera) {
         prepare(); // Prepare renderer (clear window & add depth testing)
         shader.start(); // Start shader program
+
+        SKY_COLOUR = SkyboxRenderer.SKY_COLOUR;
 
         // Load in the fog
         shader.loadSkyColour(SKY_COLOUR.x, SKY_COLOUR.y, SKY_COLOUR.z);

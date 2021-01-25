@@ -70,6 +70,8 @@ public class SkyboxRenderer {
     private final int cube_map_1_textureID;
     private final int cube_map_2_textureID;
 
+    public static final Vector3f SKY_COLOUR = new Vector3f(1, 1, 1);
+
     private float current_time = 0;
 
     public SkyboxRenderer(Loader loader, Matrix4f projectionMatrix) {
@@ -125,21 +127,25 @@ public class SkyboxRenderer {
             texture1 = cube_map_2_textureID;
             texture2 = cube_map_2_textureID;
             blendFactor = (current_time - 0)/(5000);
+            SKY_COLOUR.set(0, 0, 0);
         }
         else if(current_time >= 5000 && current_time < 8000){
             texture1 = cube_map_2_textureID;
             texture2 = cube_map_1_textureID;
             blendFactor = (current_time - 5000)/(8000 - 5000);
+            SKY_COLOUR.set(0.3f, 0.3f, 0.3f);
         }
         else if(current_time >= 8000 && current_time < 21000){
             texture1 = cube_map_1_textureID;
             texture2 = cube_map_1_textureID;
             blendFactor = (current_time - 8000)/(21000 - 8000);
+            SKY_COLOUR.set(0.8f, 0.8f, 0.8f);
         }
         else{
             texture1 = cube_map_1_textureID;
             texture2 = cube_map_2_textureID;
             blendFactor = (current_time - 21000)/(24000 - 21000);
+            SKY_COLOUR.set(0, 0, 0);
         }
 
         // Bind the first cube map
