@@ -59,6 +59,19 @@ public class MainLoop {
         }
     }
 
+    public static void generateTerrains(int rows, int cols, Terrain[][] terrains, Loader loader, TerrainTexturePack texturePack, TerrainTexture blendMap, String heightMap) {
+        for(int i = 0; i < rows; i++) {
+            for(int j = 0; j < cols; j++) {
+                terrains[i][j] = new Terrain(0, 0, loader, texturePack, blendMap, heightMap);
+            }
+        }
+    }
+
+    public static void enableFakeLightingAndHasTransparency(TexturedModel model) {
+        model.getTexture().setUseFakeLighting(true);
+        model.getTexture().setHasTransparency(true);
+    }
+
     public static void main(String[] args) {
 
         DisplayManager.createDisplay();
@@ -87,28 +100,23 @@ public class MainLoop {
         TexturedModel pinkFlower = new TexturedModel(grassModel, new ModelTexture(loader.loadTexture("flower")));
         TexturedModel pineTree = new TexturedModel(pineTreeModel, new ModelTexture(loader.loadTexture("pine")));
 
-        grass.getTexture().setHasTransparency(true);
-        fern.getTexture().setHasTransparency(true);
-        pinkFlower.getTexture().setHasTransparency(true);
-
-        grass.getTexture().setUseFakeLighting(true);
-        fern.getTexture().setUseFakeLighting(true);
-        pinkFlower.getTexture().setUseFakeLighting(true);
+        // Enable fake lighting and transparency here for models that need it
+        enableFakeLightingAndHasTransparency(grass);
+        enableFakeLightingAndHasTransparency(fern);
+        enableFakeLightingAndHasTransparency(pinkFlower);
 
         Camera camera = new Camera();
 
-        Terrain terrain = new Terrain(0, 0, loader, texturePack, blendMap, "heightmap");
-        Terrain terrain2 = new Terrain(0, 1, loader, texturePack, blendMap, "heightmap");
+        final int TERRAIN_MATRIX_ROWS = 2;
+        final int TERRAIN_MATRIX_COLS = 2;
 
         MainRenderer renderer = new MainRenderer(loader);
 
         List<Entity> entities = new ArrayList<>();
         List<Light> lights = new ArrayList<>();
-        Terrain[][] terrains = new Terrain[1][2];
+        Terrain[][] terrains = new Terrain[TERRAIN_MATRIX_ROWS][TERRAIN_MATRIX_COLS];
 
-        terrains[0][0] = terrain;
-        terrains[0][1] = terrain2;
-
+        generateTerrains(TERRAIN_MATRIX_ROWS, TERRAIN_MATRIX_COLS, terrains, loader, texturePack, blendMap, "heightmap");
         generateLights(lights, terrains, entities, loader, 10);
 
         generateModel(pineTree, entities, terrains, 2, 500, 1);
@@ -120,14 +128,15 @@ public class MainLoop {
 
             int gridX = (int) (camera.getPosition().x / Terrain.SIZE);
             int gridZ = (int) (camera.getPosition().z / Terrain.SIZE);
-            // This Main Game Loop has 3 vital tasks:
-            //  1. Impose Game Logic
-            //  2. Update Game Entities
-            //  3. Render updated entities
+
+            // Collision detection with the terrains
             camera.move(terrains[gridX][gridZ]);
 
-            renderer.processTerrain(terrains[0][0]);
-            renderer.processTerrain(terrains[0][1]);
+            for(int i = 0; i < TERRAIN_MATRIX_ROWS; i++) {
+                for(int j = 0; j < TERRAIN_MATRIX_COLS; j++) {
+                    renderer.processTerrain(terrains[i][j]);
+                }
+            }
 
             for(Entity object : entities) {
                 renderer.processEntity(object);
