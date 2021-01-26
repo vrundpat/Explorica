@@ -70,9 +70,11 @@ public class SkyboxRenderer {
     private final int cube_map_1_textureID;
     private final int cube_map_2_textureID;
 
-    public static final Vector3f SKY_COLOUR = new Vector3f(1, 1, 1);
+    public static final Vector3f SKY_COLOUR = new Vector3f(0, 0, 0);
 
     private float current_time = 0;
+    private int first_cube_map;
+    private int second_cube_map;
 
     public SkyboxRenderer(Loader loader, Matrix4f projectionMatrix) {
 
@@ -115,49 +117,35 @@ public class SkyboxRenderer {
 
     private void bindCubeMapTextures() {
 
-        current_time += DisplayManager.getDelta() * 1000;
-        current_time %= 24000; // A full day resets back to day time
-
-        int texture1;
-        int texture2;
-        float blendFactor;
+        float delta = DisplayManager.getDelta(); // Time since last frame
+        current_time += delta * 1000;
 
         // Calculate the blend factor and textures to use depending the current "time" in game
-        if(current_time >= 0 && current_time < 5000){
-            texture1 = cube_map_2_textureID;
-            texture2 = cube_map_2_textureID;
-            blendFactor = (current_time - 0)/(5000);
-            SKY_COLOUR.set(0, 0, 0);
-        }
-        else if(current_time >= 5000 && current_time < 8000){
-            texture1 = cube_map_2_textureID;
-            texture2 = cube_map_1_textureID;
-            blendFactor = (current_time - 5000)/(8000 - 5000);
-            SKY_COLOUR.set(0.3f, 0.3f, 0.3f);
-        }
-        else if(current_time >= 8000 && current_time < 21000){
-            texture1 = cube_map_1_textureID;
-            texture2 = cube_map_1_textureID;
-            blendFactor = (current_time - 8000)/(21000 - 8000);
-            SKY_COLOUR.set(0.8f, 0.8f, 0.8f);
-        }
-        else{
-            texture1 = cube_map_1_textureID;
-            texture2 = cube_map_2_textureID;
-            blendFactor = (current_time - 21000)/(24000 - 21000);
-            SKY_COLOUR.set(0, 0, 0);
-        }
-
-        // Bind the first cube map
-        GL13.glActiveTexture(GL13.GL_TEXTURE0);
-        GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texture1);
-
-        // Bind the second cube map
-        GL13.glActiveTexture(GL13.GL_TEXTURE0);
-        GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texture2);
+        float blendFactor = calculateBlendFactorAndTextures(delta);
 
         // Load in a blend factor
         shader.loadBlendFactor(blendFactor);
+
+        // Bind the first cube map
+        GL13.glActiveTexture(GL13.GL_TEXTURE0);
+        GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, first_cube_map);
+
+        // Bind the second cube map
+        GL13.glActiveTexture(GL13.GL_TEXTURE0);
+        GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, second_cube_map);
+    }
+
+    private float calculateBlendFactorAndTextures(float delta) {
+
+        // Hit midnight again, reset to 0
+        if(current_time >= 24000) {
+            current_time = 0;
+        }
+
+        first_cube_map = cube_map_2_textureID;
+        second_cube_map = cube_map_2_textureID;
+
+        return 0;
     }
 
 }

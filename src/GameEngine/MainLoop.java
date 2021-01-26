@@ -40,7 +40,7 @@ public class MainLoop {
 
     public static void generateLights(List<Light> lights, Terrain[][] terrains, List<Entity> entities, Loader loader, int count) {
         // The Sun/Moon; Light source that doesn't attenuate
-        lights.add(new Light(new Vector3f(0, 1000, 0), new Vector3f(0.2f, 0.2f, 0.2f)));
+        lights.add(new Light(new Vector3f(0, 1000, 0), new Vector3f(0.5f, 0.5f, 0.5f)));
 
         RawModel lampModel = OBJLoader.loadObjModel("lamp", loader);
         TexturedModel lamp = new TexturedModel(lampModel, new ModelTexture(loader.loadTexture("lamp")));
