@@ -135,4 +135,7 @@ public class MainRenderer {
         projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);
         projectionMatrix.m33 = 0;
     }
+
+    // Getters
+    public Matrix4f getProjectionMatrix() {  return projectionMatrix;  }
 }

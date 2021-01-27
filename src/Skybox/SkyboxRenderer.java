@@ -70,7 +70,7 @@ public class SkyboxRenderer {
     private final int cube_map_1_textureID;
     private final int cube_map_2_textureID;
 
-    public static final Vector3f SKY_COLOUR = new Vector3f(0, 0, 0);
+    public static final Vector3f SKY_COLOUR = new Vector3f(0.5f, 0.6f, 0.6f);
 
     private float current_time = 0;
     private int first_cube_map;
@@ -142,8 +142,8 @@ public class SkyboxRenderer {
             current_time = 0;
         }
 
-        first_cube_map = cube_map_2_textureID;
-        second_cube_map = cube_map_2_textureID;
+        first_cube_map = cube_map_1_textureID;
+        second_cube_map = cube_map_1_textureID;
 
         return 0;
     }

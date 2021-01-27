@@ -10,6 +10,9 @@ import Terrains.Terrain;
 import Terrains.TerrainTexture;
 import Terrains.TerrainTexturePack;
 import Textures.ModelTexture;
+import Water.WaterRenderer;
+import Water.WaterShader;
+import Water.WaterTile;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -116,12 +119,18 @@ public class MainLoop {
         List<Light> lights = new ArrayList<>();
         Terrain[][] terrains = new Terrain[TERRAIN_MATRIX_ROWS][TERRAIN_MATRIX_COLS];
 
-        generateTerrains(TERRAIN_MATRIX_ROWS, TERRAIN_MATRIX_COLS, terrains, loader, texturePack, blendMap, "heightmap");
+        generateTerrains(TERRAIN_MATRIX_ROWS, TERRAIN_MATRIX_COLS, terrains, loader, texturePack, blendMap, "heightmap2");
         generateLights(lights, terrains, entities, loader, 10);
 
-        generateModel(pineTree, entities, terrains, 2, 500, 1);
-        generateModel(grass, entities, terrains, 1, 500, 1);
-        generateModel(fern, entities, terrains, 1, 500, 4);
+        generateModel(pineTree, entities, terrains, 2, 100, 1);
+        generateModel(grass, entities, terrains, 1, 100, 1);
+        generateModel(fern, entities, terrains, 1, 100, 4);
+
+        // Water Necessities
+        WaterShader waterShader = new WaterShader();
+        WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix());
+        List<WaterTile> waterTiles = new ArrayList<>();
+        waterTiles.add(new WaterTile(100, 500, terrains[0][0].getHeightOfTerrain(100, 500)));
 
         // Loop until the 'X' is clicked on the game window
         while(!Display.isCloseRequested()) {
@@ -143,6 +152,7 @@ public class MainLoop {
             }
 
             renderer.render(lights, camera);
+            waterRenderer.render(waterTiles, camera);
 
             // Step 2
             DisplayManager.updateDisplay();

@@ -7,8 +7,8 @@ import org.lwjgl.opengl.*;
 
 public class DisplayManager {
 
-    private static final int WIN_WIDTH = 1280; // Width of the window
-    private static final int WIN_HEIGHT = 720; // Height of the window
+    private static final int WIN_WIDTH = 1440; // Width of the window
+    private static final int WIN_HEIGHT = 900; // Height of the window
     private static final int FPS = 120; // FPS Cap/Limit
 
     private static long lastFrameTime;
@@ -32,7 +32,7 @@ public class DisplayManager {
         }
 
         // Set the viewport of the display (top-left & bottom-right)
-        GL11.glViewport(0,0,WIN_WIDTH, WIN_HEIGHT);
+         GL11.glViewport(0,0, WIN_WIDTH, WIN_HEIGHT);
 
         lastFrameTime = getCurrentTime(); // Initially, the last frame should be the time the window is created
 
