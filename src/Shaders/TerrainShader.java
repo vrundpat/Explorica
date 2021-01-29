@@ -4,6 +4,7 @@ import Entities.Camera;
 import Entities.Light;
 import Tools.MatrixMath;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector4f;
 
 import java.util.List;
 
@@ -32,6 +33,8 @@ public class TerrainShader extends ShaderProgram {
     private int location_bTexture;
     private int location_blendMap;
 
+    // Water necessities
+    private int location_plane; // Location of the clip plane variable in the shader code
 
 
     public TerrainShader() {
@@ -75,6 +78,9 @@ public class TerrainShader extends ShaderProgram {
         location_gTexture = super.getUniformLocation("gTexture");
         location_bTexture = super.getUniformLocation("bTexture");
         location_blendMap = super.getUniformLocation("blendMap");
+
+        // Water necessities
+        location_plane = super.getUniformLocation("plane");
     }
 
     // Load transformation matrix in the shader code
@@ -120,5 +126,10 @@ public class TerrainShader extends ShaderProgram {
         super.loadInt(location_gTexture, 2);
         super.loadInt(location_bTexture, 3);
         super.loadInt(location_blendMap, 4);
+    }
+
+    // Load in the clip plane for a water body
+    public void loadClipPlane(Vector4f plane) {
+        super.load4DVector(location_plane, plane);
     }
 }

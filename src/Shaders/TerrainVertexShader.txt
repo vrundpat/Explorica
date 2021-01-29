@@ -16,9 +16,13 @@ uniform mat4 viewMatrix;
 uniform vec3 lightPosition[MAX_LIGHTS];
 uniform int numberOfLights;
 
+uniform vec4 plane;
+
 void main(void) {
 
     vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
+
+    gl_ClipDistance[0] = dot(worldPosition, plane);
 
     gl_Position = projectionMatrix * viewMatrix * transformationMatrix * vec4(position, 1.0);
     pass_textureCoords = textureCoords;

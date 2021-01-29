@@ -7,8 +7,8 @@ import org.lwjgl.opengl.*;
 
 public class DisplayManager {
 
-    private static final int WIN_WIDTH = 1440; // Width of the window
-    private static final int WIN_HEIGHT = 900; // Height of the window
+    private static final int WIN_WIDTH = 1280; // Width of the window
+    private static final int WIN_HEIGHT = 720; // Height of the window
     private static final int FPS = 120; // FPS Cap/Limit
 
     private static long lastFrameTime;

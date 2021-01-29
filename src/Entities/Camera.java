@@ -98,6 +98,10 @@ public class Camera {
         didJump = true;
     }
 
+    public void invertPitch() {
+        this.pitch = -pitch;
+    }
+
     public void updateHorizontalSensitivity(float delta) {
         HORIZONTAL_SENSITIVITY += delta;
     }

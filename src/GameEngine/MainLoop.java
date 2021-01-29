@@ -10,11 +10,15 @@ import Terrains.Terrain;
 import Terrains.TerrainTexture;
 import Terrains.TerrainTexturePack;
 import Textures.ModelTexture;
+import Water.WaterFrameBuffers;
 import Water.WaterRenderer;
 import Water.WaterShader;
 import Water.WaterTile;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +79,20 @@ public class MainLoop {
         model.getTexture().setHasTransparency(true);
     }
 
+    public static void renderScene(MainRenderer renderer, List<Entity> entities, Terrain[][] terrains, List<Light> lights, Camera camera, Vector4f plane, int TERRAIN_MATRIX_ROWS, int TERRAIN_MATRIX_COLS) {
+        for(int i = 0; i < TERRAIN_MATRIX_ROWS; i++) {
+            for(int j = 0; j < TERRAIN_MATRIX_COLS; j++) {
+                renderer.processTerrain(terrains[i][j]);
+            }
+        }
+
+        for(Entity object : entities) {
+            renderer.processEntity(object);
+        }
+
+        renderer.render(lights, camera, new Vector4f(0, 0, 0, 0));
+    }
+
     public static void main(String[] args) {
 
         DisplayManager.createDisplay();
@@ -110,7 +128,7 @@ public class MainLoop {
 
         Camera camera = new Camera();
 
-        final int TERRAIN_MATRIX_ROWS = 2;
+        final int TERRAIN_MATRIX_ROWS = 1;
         final int TERRAIN_MATRIX_COLS = 2;
 
         MainRenderer renderer = new MainRenderer(loader);
@@ -119,18 +137,20 @@ public class MainLoop {
         List<Light> lights = new ArrayList<>();
         Terrain[][] terrains = new Terrain[TERRAIN_MATRIX_ROWS][TERRAIN_MATRIX_COLS];
 
-        generateTerrains(TERRAIN_MATRIX_ROWS, TERRAIN_MATRIX_COLS, terrains, loader, texturePack, blendMap, "heightmap2");
+        generateTerrains(TERRAIN_MATRIX_ROWS, TERRAIN_MATRIX_COLS, terrains, loader, texturePack, blendMap, "heightmap");
         generateLights(lights, terrains, entities, loader, 10);
 
-        generateModel(pineTree, entities, terrains, 2, 100, 1);
-        generateModel(grass, entities, terrains, 1, 100, 1);
-        generateModel(fern, entities, terrains, 1, 100, 4);
+        generateModel(pineTree, entities, terrains, 2, 50, 1);
+        generateModel(grass, entities, terrains, 1, 10, 1);
+        generateModel(fern, entities, terrains, 1, 10, 4);
 
         // Water Necessities
         WaterShader waterShader = new WaterShader();
         WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix());
         List<WaterTile> waterTiles = new ArrayList<>();
-        waterTiles.add(new WaterTile(100, 500, terrains[0][0].getHeightOfTerrain(100, 500)));
+        waterTiles.add(new WaterTile(316, 375, terrains[0][0].getHeightOfTerrain(315, 375) + 1));
+
+        WaterFrameBuffers water_fbo = new WaterFrameBuffers();
 
         // Loop until the 'X' is clicked on the game window
         while(!Display.isCloseRequested()) {
@@ -141,23 +161,39 @@ public class MainLoop {
             // Collision detection with the terrains
             camera.move(terrains[gridX][gridZ]);
 
-            for(int i = 0; i < TERRAIN_MATRIX_ROWS; i++) {
-                for(int j = 0; j < TERRAIN_MATRIX_COLS; j++) {
-                    renderer.processTerrain(terrains[i][j]);
-                }
-            }
+             GL11.glEnable(GL30.GL_CLIP_DISTANCE0); // Enable a clip plane
 
-            for(Entity object : entities) {
-                renderer.processEntity(object);
-            }
+            // Bind the reflection frame buffer and render with the given clip plane to the frame buffer
+            water_fbo.bindReflectionFrameBuffer();
+            float distance = 2 * (camera.getPosition().y - waterTiles.get(0).getHeight());
+            camera.getPosition().y -= distance;
+            camera.invertPitch();
 
-            renderer.render(lights, camera);
+            renderScene(renderer, entities, terrains, lights, camera, new Vector4f(0, 1, 0, -waterTiles.get(0).getHeight()), TERRAIN_MATRIX_ROWS, TERRAIN_MATRIX_COLS);
+
+            camera.getPosition().y += distance;
+            camera.invertPitch();
+
+            // Bind the refraction frame buffer and render with the given clip plane to the frame buffer
+            water_fbo.bindRefractionFrameBuffer();
+            renderScene(renderer, entities, terrains, lights, camera, new Vector4f(0, -1, 0, waterTiles.get(0).getHeight()), TERRAIN_MATRIX_ROWS, TERRAIN_MATRIX_COLS);
+
+            GL11.glDisable(GL30.GL_CLIP_DISTANCE0); // Disable the clip plane
+
+            // Revert to the default frame buffer
+            water_fbo.unbindCurrentFrameBuffer();
+
+            // Render the scene using the default frame buffer
+            renderScene(renderer, entities, terrains, lights, camera, new Vector4f(0, -1, 0, 100000), TERRAIN_MATRIX_ROWS, TERRAIN_MATRIX_COLS);
             waterRenderer.render(waterTiles, camera);
 
             // Step 2
             DisplayManager.updateDisplay();
         }
 
+        // Clean up shaders and textures upon game termination
+        water_fbo.cleanUp();
+        waterShader.cleanUp();
         renderer.cleanUp();
         loader.cleanUp();
 

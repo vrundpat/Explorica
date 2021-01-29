@@ -6,6 +6,7 @@ import Tools.MatrixMath;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 import java.util.List;
 
@@ -32,6 +33,8 @@ public class StaticShader extends ShaderProgram {
 
     private int location_numberOfRows;
     private int location_offset;
+
+    private int location_plane; // Location of the clip plane variable in the shader code
 
 
     public StaticShader() {
@@ -77,6 +80,9 @@ public class StaticShader extends ShaderProgram {
         // Texture atlas necessities
         location_numberOfRows = super.getUniformLocation("numberOfRows");
         location_offset = super.getUniformLocation("offset");
+
+        // Water necessities
+        location_plane = super.getUniformLocation("plane");
     }
 
     // Load transformation matrix in the shader code
@@ -131,5 +137,10 @@ public class StaticShader extends ShaderProgram {
 
     public void loadOffset(float x, float y) {
         super.load2DVector(location_offset, new Vector2f(x, y));
+    }
+
+    // Load in the clip plane for a water body
+    public void loadClipPlane(Vector4f plane) {
+        super.load4DVector(location_plane, plane);
     }
 }

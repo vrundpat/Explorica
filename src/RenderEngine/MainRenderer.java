@@ -12,6 +12,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,9 +71,11 @@ public class MainRenderer {
         terrains.add(terrain);
     }
 
-    public void render(List<Light> lights, Camera camera) {
+    public void render(List<Light> lights, Camera camera, Vector4f clipPlane) {
         prepare(); // Prepare renderer (clear window & add depth testing)
         shader.start(); // Start shader program
+
+        shader.loadClipPlane(clipPlane); // Load in a clip plane
 
         SKY_COLOUR = SkyboxRenderer.SKY_COLOUR;
 
@@ -87,6 +90,7 @@ public class MainRenderer {
 
         // Render the terrains
         terrainShader.start();
+        terrainShader.loadClipPlane(clipPlane);
         terrainShader.loadLights(lights);
         terrainShader.loadViewMatrix(camera);
         terrainRenderer.render(terrains);
