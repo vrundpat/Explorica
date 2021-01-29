@@ -52,11 +52,11 @@ public class WaterFrameBuffers {
 
     /* Following two functions bind Frame Buffers to their correct place in memory*/
     public void bindReflectionFrameBuffer() {
-        bindFrameBuffer(reflectionFrameBuffer, REFLECTION_WIDTH,REFLECTION_HEIGHT);
+        bindFrameBuffer(reflectionFrameBuffer, REFLECTION_WIDTH, REFLECTION_HEIGHT);
     }
 
     public void bindRefractionFrameBuffer() {
-        bindFrameBuffer(refractionFrameBuffer, REFRACTION_WIDTH,REFRACTION_HEIGHT);
+        bindFrameBuffer(refractionFrameBuffer, REFRACTION_WIDTH, REFRACTION_HEIGHT);
     }
 
     /*
@@ -73,16 +73,16 @@ public class WaterFrameBuffers {
     /* Initialize a reflection frame buffer with a Depth Buffer & a pixel texture attachment*/
     private void initialiseReflectionFrameBuffer() {
         reflectionFrameBuffer = createFrameBuffer();
-        reflectionTexture = createTextureAttachment(REFLECTION_WIDTH,REFLECTION_HEIGHT);
-        reflectionDepthBuffer = createDepthBufferAttachment(REFLECTION_WIDTH,REFLECTION_HEIGHT);
+        reflectionTexture = createTextureAttachment(REFLECTION_WIDTH, REFLECTION_HEIGHT);
+        reflectionDepthBuffer = createDepthBufferAttachment(REFLECTION_WIDTH, REFLECTION_HEIGHT);
         unbindCurrentFrameBuffer();
     }
 
     /* Initialize a refraction frame buffer with a Depth Buffer & a pixel texture attachment*/
     private void initialiseRefractionFrameBuffer() {
         refractionFrameBuffer = createFrameBuffer();
-        refractionTexture = createTextureAttachment(REFRACTION_WIDTH,REFRACTION_HEIGHT);
-        refractionDepthTexture = createDepthTextureAttachment(REFRACTION_WIDTH,REFRACTION_HEIGHT);
+        refractionTexture = createTextureAttachment(REFRACTION_WIDTH, REFRACTION_HEIGHT);
+        refractionDepthTexture = createDepthTextureAttachment(REFRACTION_WIDTH, REFRACTION_HEIGHT);
         unbindCurrentFrameBuffer();
     }
 
