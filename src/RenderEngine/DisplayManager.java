@@ -26,6 +26,7 @@ public class DisplayManager {
         try {
             Display.setDisplayMode(new DisplayMode(WIN_WIDTH, WIN_HEIGHT));
             Display.create(new PixelFormat(), attribs);
+            Display.setTitle("Wander");
         }
         catch (LWJGLException error) {
             error.printStackTrace();

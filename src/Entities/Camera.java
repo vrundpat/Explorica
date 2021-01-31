@@ -88,6 +88,9 @@ public class Camera {
             position.z += (float)Math.sin(Math.toRadians(yaw)) * CAMERA_SPEED * delta;
             position.x += (float)Math.cos(Math.toRadians(yaw)) * CAMERA_SPEED * delta;
         }
+        if(Keyboard.isKeyDown(Keyboard.KEY_Q)) {
+            position.y += CAMERA_SPEED * CAMERA_SPEED / 2 * delta;
+        }
         if(Keyboard.isKeyDown(Keyboard.KEY_SPACE) && !didJump) {
             jump();
         }
