@@ -3,7 +3,7 @@ A 3D exploration game built using Java &amp; OpenGL with a custom engine.
 
 An exploration game where you can run around, interact with objects and move around entities! It's quite a simple game with not a large emphasis on gameplay, but rather for the underlying Game Engine involved. The custom game engine was written in Java, LWJGL 2.9 & GLSL which drives the shader code. Along with the game engine, there is an additional array of tools such as an ```OBJ File Decoder``` which was used within the Game Engine itself. 
 
-### Wanter Previews
+### Wander Previews
 ![Image of Wander DayTime](https://github.com/vrundpat/Wander/blob/main/src/Resources/Screenshots/Day.png)
 ![Image of Wander DayTime](https://github.com/vrundpat/Wander/blob/main/src/Resources/Screenshots/Night.png)
 
