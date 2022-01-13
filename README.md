@@ -13,9 +13,8 @@ An exploration game where you can run around, interact with objects and move aro
 [![Release](https://img.shields.io/badge/Released-No-red)]()
 
 
-### Wander Previews
-![Image of Wander DayTime](https://github.com/vrundpat/Wander/blob/main/src/Resources/Screenshots/Day.png)
+### Wander Preview
 ![Image of Wander DayTime](https://github.com/vrundpat/Wander/blob/main/src/Resources/Screenshots/Night.png)
 
 ### Running Wander
-In terms of running Wwander locally, ```LWJGL 2.9``` is needed (platform-independent), along with the suitable JARS and Utils which are platform dependent. The Utils and JARS in this repo are meant for the use of Mac based machines, specifically Mac OS 10+. You would have to find the correct JARS and Utils for your platform specifically and link them to the project. Presently, ```Mac OS 10+``` users can run Wander out of the box, but other platforms will have to fill in these gaps accordingly.
+In terms of running Wander locally, ```LWJGL 2.9``` is needed (platform-independent), along with the suitable JARS and Utils which are platform dependent. The Utils and JARS in this repo are meant for the use of Mac based machines, specifically Mac OS 10+. You would have to find the correct JARS and Utils for your platform specifically and link them to the project. Presently, ```Mac OS 10+``` users can run Wander out of the box, but other platforms will have to fill in these gaps accordingly.
